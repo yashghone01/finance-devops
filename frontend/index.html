@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Finance DevOps Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body {
+            font-family: Arial;
+            padding: 20px;
+            max-width: 500px;
+            margin: auto;
+        }
+        input, select, button {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            font-size: 16px;
+        }
+        button {
+            background-color: green;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        h2 {
+            text-align: center;
+        }
+        .summary {
+            background: #f2f2f2;
+            padding: 10px;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+        table {
+            width: 100%;
+            margin-top: 15px;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 6px;
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>Finance Dashboard</h2>
+
+<div class="summary">
+    <strong>Today's Total:</strong> ₹<span id="dailyTotal">0</span><br>
+    <strong>Monthly Total:</strong> ₹<span id="monthlyTotal">0</span>
+</div>
+
+<h3>Add Expense</h3>
+
+<input type="number" id="amount" placeholder="Amount">
+<input type="text" id="category" placeholder="Category">
+<select id="payment_mode">
+    <option value="CASH">CASH</option>
+    <option value="UPI">UPI</option>
+</select>
+<input type="text" id="description" placeholder="Description">
+<input type="date" id="expense_date">
+
+<button onclick="submitExpense()">Add Expense</button>
+
+<h3>Recent Transactions</h3>
+<table>
+    <thead>
+        <tr>
+            <th>Amount</th>
+            <th>Category</th>
+            <th>Mode</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody id="historyTable"></tbody>
+</table>
+
+<script>
+window.onload = function() {
+    const today = new Date().toISOString().split("T")[0];
+    document.getElementById("expense_date").value = today;
+    loadSummary();
+    loadHistory();
+};
+
+async function loadSummary() {
+    const daily = await fetch("/expenses/daily").then(res => res.json());
+    const monthly = await fetch("/expenses/monthly").then(res => res.json());
+
+    document.getElementById("dailyTotal").innerText = daily.daily_total;
+    document.getElementById("monthlyTotal").innerText = monthly.monthly_total;
+}
+
+async function loadHistory() {
+    const data = await fetch("/expenses/history").then(res => res.json());
+    const table = document.getElementById("historyTable");
+    table.innerHTML = "";
+
+    data.forEach(item => {
+        table.innerHTML += `
+            <tr>
+                <td>₹${item.amount}</td>
+                <td>${item.category}</td>
+                <td>${item.payment_mode}</td>
+                <td>${item.expense_date}</td>
+            </tr>
+        `;
+    });
+}
+
+async function submitExpense() {
+    const data = {
+        amount: parseFloat(document.getElementById("amount").value),
+        category: document.getElementById("category").value,
+        payment_mode: document.getElementById("payment_mode").value,
+        description: document.getElementById("description").value,
+        expense_date: document.getElementById("expense_date").value
+    };
+
+    await fetch("/expenses", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data)
+    });
+
+    document.getElementById("amount").value = "";
+    document.getElementById("category").value = "";
+    document.getElementById("description").value = "";
+
+    loadSummary();
+    loadHistory();
+}
+</script>
+
+</body>
+</html>
