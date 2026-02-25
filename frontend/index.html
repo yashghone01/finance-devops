@@ -22,9 +22,7 @@
             border: none;
             cursor: pointer;
         }
-        h2 {
-            text-align: center;
-        }
+        h2 { text-align: center; }
         .summary {
             background: #f2f2f2;
             padding: 10px;
@@ -41,11 +39,27 @@
             padding: 6px;
             font-size: 14px;
         }
+        .auth-box {
+            margin-bottom: 20px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
     </style>
 </head>
 <body>
 
 <h2>Finance Dashboard</h2>
+
+<div class="auth-box" id="authSection">
+    <h3>Login / Register</h3>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="register()">Register</button>
+    <button onclick="login()">Login</button>
+</div>
+
+<div id="appSection" style="display:none;">
 
 <div class="summary">
     <strong>Today's Total:</strong> ₹<span id="dailyTotal">0</span><br>
@@ -78,24 +92,91 @@
     <tbody id="historyTable"></tbody>
 </table>
 
+<button style="background:red;margin-top:20px;" onclick="logout()">Logout</button>
+
+</div>
+
 <script>
+
 window.onload = function() {
     const today = new Date().toISOString().split("T")[0];
     document.getElementById("expense_date").value = today;
-    loadSummary();
-    loadHistory();
+
+    const token = localStorage.getItem("token");
+    if (token) {
+        showApp();
+        loadSummary();
+        loadHistory();
+    }
 };
 
+function showApp() {
+    document.getElementById("authSection").style.display = "none";
+    document.getElementById("appSection").style.display = "block";
+}
+
+function getAuthHeaders() {
+    return {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + localStorage.getItem("token")
+    };
+}
+
+async function register() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    await fetch("/register?email=" + email + "&password=" + password, {
+        method: "POST"
+    });
+
+    alert("Registered successfully! Now login.");
+}
+
+async function login() {
+    const email = document.getElementById("email").value;
+    const password = document.getElementById("password").value;
+
+    const formData = new URLSearchParams();
+    formData.append("username", email);
+    formData.append("password", password);
+
+    const response = await fetch("/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: formData
+    });
+
+    const data = await response.json();
+
+    if (data.access_token) {
+        localStorage.setItem("token", data.access_token);
+        showApp();
+        loadSummary();
+        loadHistory();
+    } else {
+        alert("Login failed");
+    }
+}
+
 async function loadSummary() {
-    const daily = await fetch("/expenses/daily").then(res => res.json());
-    const monthly = await fetch("/expenses/monthly").then(res => res.json());
+    const daily = await fetch("/expenses/daily", {
+        headers: getAuthHeaders()
+    }).then(res => res.json());
+
+    const monthly = await fetch("/expenses/monthly", {
+        headers: getAuthHeaders()
+    }).then(res => res.json());
 
     document.getElementById("dailyTotal").innerText = daily.daily_total;
     document.getElementById("monthlyTotal").innerText = monthly.monthly_total;
 }
 
 async function loadHistory() {
-    const data = await fetch("/expenses/history").then(res => res.json());
+    const data = await fetch("/expenses/history", {
+        headers: getAuthHeaders()
+    }).then(res => res.json());
+
     const table = document.getElementById("historyTable");
     table.innerHTML = "";
 
@@ -122,7 +203,7 @@ async function submitExpense() {
 
     await fetch("/expenses", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: getAuthHeaders(),
         body: JSON.stringify(data)
     });
 
@@ -133,6 +214,12 @@ async function submitExpense() {
     loadSummary();
     loadHistory();
 }
+
+function logout() {
+    localStorage.removeItem("token");
+    location.reload();
+}
+
 </script>
 
 </body>
