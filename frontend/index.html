@@ -1,226 +1,621 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-    <title>Finance DevOps Dashboard</title>
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance DevOps Dashboard</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
         body {
-            font-family: Arial;
+            background-color: #0d1117;
+            color: #e6edf3;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Dedicated screen wrappers */
+        #authLayoutWrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100vw;
+            position: relative;
             padding: 20px;
-            max-width: 500px;
-            margin: auto;
         }
-        input, select, button {
+
+        #appLayoutWrapper {
+            display: none;
+            /* hidden by default */
+            min-height: 100vh;
+            width: 100vw;
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        .app-inner-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Animated Liquid Blobs Background */
+        .blob-bg {
+            position: absolute;
+            filter: blur(80px);
+            z-index: -1;
+            border-radius: 50%;
+            animation: floatBlob 20s infinite alternate ease-in-out;
+            opacity: 0.6;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #00f2fe, #4facfe);
+            top: -10%;
+            left: -10%;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #f093fb, #f5576c);
+            bottom: -20%;
+            right: -10%;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #43e97b, #38f9d7);
+            bottom: 20%;
+            left: 20%;
+            animation-duration: 25s;
+        }
+
+        @keyframes floatBlob {
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+        }
+
+        /* The Main Liquid Glass Container */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px;
             width: 100%;
-            padding: 10px;
+            box-shadow: 0 25px 45px rgba(0, 0, 0, 0.2), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            position: relative;
+        }
+
+        /* Header typography */
+        h2 {
+            font-size: 36px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 25px;
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        h3 {
+            font-size: 20px;
+            font-weight: 500;
+            margin: 30px 0 15px 0;
+            color: #c7d2fe;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
+        }
+
+        /* Glass Input Fields */
+        input,
+        select {
+            width: 100%;
+            padding: 15px 20px;
             margin-top: 10px;
-            font-size: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.15);
+            color: #fff;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
+
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        option {
+            background: #1a1f2c;
+            color: #fff;
+        }
+
+        input:focus,
+        select:focus {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.5);
+            /* Indigo glow */
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Liquid Soft Buttons */
         button {
-            background-color: green;
-            color: white;
-            border: none;
+            width: 100%;
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            color: #fff;
+            font-weight: 600;
+            font-size: 16px;
+            letter-spacing: 0.5px;
             cursor: pointer;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+            position: relative;
         }
-        h2 { text-align: center; }
-        .summary {
-            background: #f2f2f2;
-            padding: 10px;
+
+        /* Button Hover Sheen */
+        button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: skewX(-25deg);
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            border-color: rgba(255, 255, 255, 0.3);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover::after {
+            left: 200%;
+            transition: 0.7s ease-in-out;
+        }
+
+        button:active {
+            transform: translateY(0);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.2), rgba(244, 63, 94, 0.05));
+            border-color: rgba(244, 63, 94, 0.3);
+            color: #ffe4e6;
+            margin-top: 35px;
+        }
+
+        .btn-danger:hover {
+            background: linear-gradient(135deg, rgba(244, 63, 94, 0.3), rgba(244, 63, 94, 0.1));
+            border-color: rgba(244, 63, 94, 0.5);
+            box-shadow: 0 10px 25px rgba(244, 63, 94, 0.2);
+        }
+
+        /* Summary Dashboard Cards */
+        .summary-cards {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .card {
+            flex: 1;
+            padding: 25px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+        }
+
+        .card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-4px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .card .title {
+            font-size: 14px;
+            color: #94a3b8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 500;
+        }
+
+        .card span {
+            display: block;
+            font-size: 38px;
+            font-weight: 700;
+            margin-top: 8px;
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Forms Layout */
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .col-span-2 {
+            grid-column: span 2;
+        }
+
+        /* Modern Table */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(0, 0, 0, 0.1);
             margin-top: 15px;
-            border-radius: 5px;
         }
+
         table {
             width: 100%;
-            margin-top: 15px;
             border-collapse: collapse;
         }
-        th, td {
-            border: 1px solid #ccc;
-            padding: 6px;
-            font-size: 14px;
+
+        th,
+        td {
+            padding: 16px 20px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            font-size: 15px;
+            color: #cbd5e1;
         }
-        .auth-box {
-            margin-bottom: 20px;
-            padding: 10px;
-            background: #f9f9f9;
-            border-radius: 5px;
+
+        th {
+            background: rgba(255, 255, 255, 0.02);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+
+        tbody tr {
+            transition: background 0.2s;
+        }
+
+        tbody tr:hover {
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        /* Modern Pill Tag */
+        .badge {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+            color: #e2e8f0;
+            box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Auth styling */
+        .auth-container {
+            max-width: 440px;
+            margin: auto;
+            padding-top: 50px;
+            padding-bottom: 50px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        @media (max-width: 600px) {
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .col-span-2 {
+                grid-column: span 1 !important;
+            }
+
+            .summary-cards {
+                flex-direction: column;
+            }
+
+            .glass-panel {
+                padding: 30px 20px;
+                border-radius: 20px;
+            }
         }
     </style>
 </head>
+
 <body>
 
-<h2>Finance Dashboard</h2>
+    <!-- ================= AUTHENTICATION SCREEN ================= -->
+    <div id="authLayoutWrapper">
+        <!-- Animated Background Liquid Blobs ONLY for Auth -->
+        <div class="blob-bg blob-1"></div>
+        <div class="blob-bg blob-2"></div>
+        <div class="blob-bg blob-3"></div>
 
-<div class="auth-box" id="authSection">
-    <h3>Login / Register</h3>
-    <input type="email" id="email" placeholder="Email">
-    <input type="password" id="password" placeholder="Password">
-    <button onclick="register()">Register</button>
-    <button onclick="login()">Login</button>
-</div>
+        <div class="glass-panel auth-container" id="authSection">
+            <h2>Welcome</h2>
+            <p style="text-align: center; margin-bottom: 20px; font-size: 14px; color: rgba(255,255,255,0.9);">Login or
+                Register to access your Finance Dashboard</p>
+            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <div class="auth-buttons">
+                <button onclick="login()">Login</button>
+                <button onclick="register()" style="background: rgba(255,255,255,0.1)">Register</button>
+            </div>
+        </div>
+    </div>
 
-<div id="appSection" style="display:none;">
+    <!-- ================= DASHBOARD SCREEN ================= -->
+    <div id="appLayoutWrapper">
+        <div class="app-inner-container">
+            <div class="glass-panel" id="appSection">
+                <h2>Finance Dashboard</h2>
 
-<div class="summary">
-    <strong>Today's Total:</strong> ₹<span id="dailyTotal">0</span><br>
-    <strong>Monthly Total:</strong> ₹<span id="monthlyTotal">0</span>
-</div>
+                <div class="summary-cards">
+                    <div class="card">
+                        <div class="title">Today's Expense</div>
+                        <span id="dailyTotal">₹0</span>
+                    </div>
+                    <div class="card">
+                        <div class="title">Monthly Expense</div>
+                        <span id="monthlyTotal">₹0</span>
+                    </div>
+                </div>
 
-<h3>Add Expense</h3>
+                <h3>Add New Expense</h3>
+                <div class="form-grid">
+                    <input type="number" id="amount" placeholder="Amount (₹)">
+                    <input type="text" id="category" placeholder="Category (e.g., Food, Travel)">
 
-<input type="number" id="amount" placeholder="Amount">
-<input type="text" id="category" placeholder="Category">
-<select id="payment_mode">
-    <option value="CASH">CASH</option>
-    <option value="UPI">UPI</option>
-</select>
-<input type="text" id="description" placeholder="Description">
-<input type="date" id="expense_date">
+                    <select id="payment_mode">
+                        <option value="CASH">Cash</option>
+                        <option value="UPI">UPI</option>
+                    </select>
+                    <input type="date" id="expense_date" title="Expense Date">
 
-<button onclick="submitExpense()">Add Expense</button>
+                    <input type="text" id="description" placeholder="Description/Note" class="col-span-2">
+                    <button onclick="submitExpense()" class="col-span-2">+ Add Expense</button>
+                </div>
 
-<h3>Recent Transactions</h3>
-<table>
-    <thead>
-        <tr>
-            <th>Amount</th>
-            <th>Category</th>
-            <th>Mode</th>
-            <th>Date</th>
-        </tr>
-    </thead>
-    <tbody id="historyTable"></tbody>
-</table>
+                <h3>Recent Transactions</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Amount</th>
+                                <th>Category</th>
+                                <th>Mode</th>
+                                <th>Date</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyTable"></tbody>
+                    </table>
+                </div>
 
-<button style="background:red;margin-top:20px;" onclick="logout()">Logout</button>
+                <button class="btn-danger" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </div>
 
-</div>
+    <script>
+        window.onload = function () {
+            const today = new Date().toISOString().split("T")[0];
+            document.getElementById("expense_date").value = today;
 
-<script>
+            const token = localStorage.getItem("token");
+            if (token) {
+                showApp();
+                loadSummary();
+                loadHistory();
+            }
+        };
 
-window.onload = function() {
-    const today = new Date().toISOString().split("T")[0];
-    document.getElementById("expense_date").value = today;
+        function showApp() {
+            document.getElementById("authLayoutWrapper").style.display = "none";
+            document.getElementById("appLayoutWrapper").style.display = "block";
+        }
 
-    const token = localStorage.getItem("token");
-    if (token) {
-        showApp();
-        loadSummary();
-        loadHistory();
-    }
-};
+        function getAuthHeaders() {
+            return {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            };
+        }
 
-function showApp() {
-    document.getElementById("authSection").style.display = "none";
-    document.getElementById("appSection").style.display = "block";
-}
+        async function register() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            if (!email || !password) return alert("Please enter email and password");
 
-function getAuthHeaders() {
-    return {
-        "Content-Type": "application/json",
-        "Authorization": "Bearer " + localStorage.getItem("token")
-    };
-}
+            try {
+                const response = await fetch("/register?email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password), {
+                    method: "POST"
+                });
+                if (response.ok) {
+                    alert("Registered successfully! Now login.");
+                } else {
+                    const data = await response.json();
+                    alert(data.detail || "Registration failed");
+                }
+            } catch (e) {
+                alert("Error connecting to server.");
+            }
+        }
 
-async function register() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+        async function login() {
+            const email = document.getElementById("email").value;
+            const password = document.getElementById("password").value;
+            if (!email || !password) return alert("Please enter email and password");
 
-    await fetch("/register?email=" + email + "&password=" + password, {
-        method: "POST"
-    });
+            const formData = new URLSearchParams();
+            formData.append("username", email);
+            formData.append("password", password);
 
-    alert("Registered successfully! Now login.");
-}
+            try {
+                const response = await fetch("/login", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                    body: formData
+                });
 
-async function login() {
-    const email = document.getElementById("email").value;
-    const password = document.getElementById("password").value;
+                const data = await response.json();
 
-    const formData = new URLSearchParams();
-    formData.append("username", email);
-    formData.append("password", password);
+                if (data.access_token) {
+                    localStorage.setItem("token", data.access_token);
+                    showApp();
+                    loadSummary();
+                    loadHistory();
+                } else {
+                    alert(data.detail || "Login failed");
+                }
+            } catch (e) {
+                alert("Error connecting to server.");
+            }
+        }
 
-    const response = await fetch("/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        body: formData
-    });
+        async function loadSummary() {
+            try {
+                // Pass the frontend's current local date selection so the server doesn't use UTC time
+                const activeDate = document.getElementById("expense_date").value || new Date().toISOString().split("T")[0];
 
-    const data = await response.json();
+                const daily = await fetch("/expenses/daily?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
+                const monthly = await fetch("/expenses/monthly?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
 
-    if (data.access_token) {
-        localStorage.setItem("token", data.access_token);
-        showApp();
-        loadSummary();
-        loadHistory();
-    } else {
-        alert("Login failed");
-    }
-}
+                // Enforce strict 2-decimal precision so floats like 150.5 render as 150.50
+                document.getElementById("dailyTotal").innerText = '₹ ' + Number(daily.daily_total || 0).toFixed(2);
+                document.getElementById("monthlyTotal").innerText = '₹ ' + Number(monthly.monthly_total || 0).toFixed(2);
+            } catch (e) { console.error("Failed to load summary", e); }
+        }
 
-async function loadSummary() {
-    const daily = await fetch("/expenses/daily", {
-        headers: getAuthHeaders()
-    }).then(res => res.json());
+        async function loadHistory() {
+            try {
+                const data = await fetch("/expenses/history", { headers: getAuthHeaders() }).then(res => res.json());
 
-    const monthly = await fetch("/expenses/monthly", {
-        headers: getAuthHeaders()
-    }).then(res => res.json());
+                const table = document.getElementById("historyTable");
+                table.innerHTML = "";
 
-    document.getElementById("dailyTotal").innerText = daily.daily_total;
-    document.getElementById("monthlyTotal").innerText = monthly.monthly_total;
-}
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        table.innerHTML += `
+                    <tr>
+                        <td><strong>₹${item.amount}</strong></td>
+                        <td>${item.category}</td>
+                        <td><span class="badge">${item.payment_mode}</span></td>
+                        <td>${item.expense_date}</td>
+                    </tr>
+                `;
+                    });
+                } else {
+                    table.innerHTML = `<tr><td colspan="4" style="text-align: center; opacity: 0.7;">No recent transactions</td></tr>`;
+                }
+            } catch (e) { console.error("Failed to load history"); }
+        }
 
-async function loadHistory() {
-    const data = await fetch("/expenses/history", {
-        headers: getAuthHeaders()
-    }).then(res => res.json());
+        async function submitExpense() {
+            const amountVal = document.getElementById("amount").value;
+            const categoryVal = document.getElementById("category").value;
+            const dateVal = document.getElementById("expense_date").value;
 
-    const table = document.getElementById("historyTable");
-    table.innerHTML = "";
+            if (!amountVal || !categoryVal || !dateVal) return alert("Amount, Category and Date are required.");
 
-    data.forEach(item => {
-        table.innerHTML += `
-            <tr>
-                <td>₹${item.amount}</td>
-                <td>${item.category}</td>
-                <td>${item.payment_mode}</td>
-                <td>${item.expense_date}</td>
-            </tr>
-        `;
-    });
-}
+            const data = {
+                amount: parseFloat(amountVal),
+                category: categoryVal,
+                payment_mode: document.getElementById("payment_mode").value,
+                description: document.getElementById("description").value || "",
+                expense_date: dateVal
+            };
 
-async function submitExpense() {
-    const data = {
-        amount: parseFloat(document.getElementById("amount").value),
-        category: document.getElementById("category").value,
-        payment_mode: document.getElementById("payment_mode").value,
-        description: document.getElementById("description").value,
-        expense_date: document.getElementById("expense_date").value
-    };
+            try {
+                const response = await fetch("/expenses", {
+                    method: "POST",
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify(data)
+                });
 
-    await fetch("/expenses", {
-        method: "POST",
-        headers: getAuthHeaders(),
-        body: JSON.stringify(data)
-    });
+                if (response.ok) {
+                    document.getElementById("amount").value = "";
+                    document.getElementById("category").value = "";
+                    document.getElementById("description").value = "";
+                    document.getElementById("expense_date").value = new Date().toISOString().split("T")[0];
+                    loadSummary();
+                    loadHistory();
+                } else {
+                    alert("Failed to add expense.");
+                }
+            } catch (e) {
+                alert("Error connecting to server.");
+            }
+        }
 
-    document.getElementById("amount").value = "";
-    document.getElementById("category").value = "";
-    document.getElementById("description").value = "";
-
-    loadSummary();
-    loadHistory();
-}
-
-function logout() {
-    localStorage.removeItem("token");
-    location.reload();
-}
-
-</script>
-
+        function logout() {
+            localStorage.removeItem("token");
+            location.reload();
+        }
+    </script>
 </body>
+
 </html>

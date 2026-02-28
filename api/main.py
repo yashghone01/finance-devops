@@ -135,38 +135,40 @@ def add_expense(
 
 
 @app.get("/expenses/daily")
-def get_daily_total(current_user: dict = Depends(get_current_user)):
+def get_daily_total(target_date: str, current_user: dict = Depends(get_current_user)):
     query = text("""
         SELECT SUM(amount)
         FROM transactions
-        WHERE expense_date = CURRENT_DATE
+        WHERE expense_date = CAST(:target_date AS DATE)
         AND user_id = :user_id
     """)
 
     with engine.connect() as connection:
         result = connection.execute(query, {
-            "user_id": current_user["id"]
+            "user_id": current_user["id"],
+            "target_date": target_date
         }).scalar()
 
-    return {"daily_total": result or 0}
+    return {"daily_total": float(result) if result else 0.0}
 
 
 @app.get("/expenses/monthly")
-def get_monthly_total(current_user: dict = Depends(get_current_user)):
+def get_monthly_total(target_date: str, current_user: dict = Depends(get_current_user)):
     query = text("""
         SELECT SUM(amount)
         FROM transactions
         WHERE date_trunc('month', expense_date) =
-              date_trunc('month', CURRENT_DATE)
+              date_trunc('month', CAST(:target_date AS DATE))
         AND user_id = :user_id
     """)
 
     with engine.connect() as connection:
         result = connection.execute(query, {
-            "user_id": current_user["id"]
+            "user_id": current_user["id"],
+            "target_date": target_date
         }).scalar()
 
-    return {"monthly_total": result or 0}
+    return {"monthly_total": float(result) if result else 0.0}
 
 
 @app.get("/expenses/history")
