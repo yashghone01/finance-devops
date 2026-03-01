@@ -4,38 +4,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>axio - Expense Tracker</title>
+    <title>Finance App</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-        :root {
-            --bg-dark: #121212;
-            --surface: #1E1E1E;
-            --surface-light: #2A2A2A;
-            --accent: #C6FF00;
-            /* Axio Lime Green */
-            --accent-hover: #b0e600;
-            --text-primary: #FFFFFF;
-            --text-secondary: #9E9E9E;
-            --danger: #FF5252;
-            --radius-lg: 24px;
-            --radius-md: 16px;
-            --radius-sm: 8px;
-        }
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Inter', sans-serif;
+            font-family: 'Outfit', sans-serif;
             -webkit-tap-highlight-color: transparent;
         }
 
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-primary);
+            background-color: #0d1117;
+            color: #e6edf3;
             min-height: 100vh;
             overflow-x: hidden;
+            position: relative;
+        }
+
+        /* Animated Liquid Blobs Background */
+        .blob-bg {
+            position: fixed;
+            filter: blur(80px);
+            z-index: -1;
+            border-radius: 50%;
+            animation: floatBlob 20s infinite alternate ease-in-out;
+            opacity: 0.6;
+        }
+
+        .blob-1 {
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, #00f2fe, #4facfe);
+            top: -10%;
+            left: -10%;
+        }
+
+        .blob-2 {
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, #f093fb, #f5576c);
+            bottom: -20%;
+            right: -10%;
+            animation-delay: -5s;
+        }
+
+        .blob-3 {
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, #43e97b, #38f9d7);
+            bottom: 20%;
+            left: 20%;
+            animation-duration: 25s;
+        }
+
+        @keyframes floatBlob {
+            0% { transform: translate(0, 0) scale(1); }
+            33% { transform: translate(30px, -50px) scale(1.1); }
+            66% { transform: translate(-20px, 20px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        /* Essential Glass Utility */
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            border-left: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.02);
+            position: relative;
         }
 
         /* Wrappers */
@@ -50,7 +91,6 @@
         #appLayoutWrapper {
             display: none;
             padding-bottom: 90px;
-            /* Padding for bottom nav */
         }
 
         .container {
@@ -62,29 +102,27 @@
 
         /* Auth Screen */
         .auth-card {
-            background: var(--surface);
             padding: 40px 30px;
-            border-radius: var(--radius-lg);
+            border-radius: 24px;
             width: 100%;
             max-width: 400px;
             text-align: center;
         }
 
         .auth-card h1 {
-            font-size: 32px;
+            font-size: 34px;
             font-weight: 800;
             margin-bottom: 8px;
             letter-spacing: -1px;
-        }
-
-        .auth-card h1 span {
-            color: var(--accent);
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         .auth-card p {
-            color: var(--text-secondary);
+            color: #c7d2fe;
             margin-bottom: 30px;
-            font-size: 14px;
+            font-size: 15px;
             line-height: 1.5;
         }
 
@@ -97,62 +135,90 @@
         input,
         select {
             width: 100%;
-            padding: 18px 20px;
-            background: var(--surface-light);
-            border: 2px solid transparent;
-            border-radius: var(--radius-md);
-            color: var(--text-primary);
+            padding: 16px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.15);
+            color: #fff;
             font-size: 16px;
             outline: none;
-            transition: 0.2s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
         input:focus,
         select:focus {
-            border-color: var(--accent);
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(99, 102, 241, 0.5);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        input::placeholder {
-            color: #666;
-            font-weight: 500;
-        }
-
-        select {
-            appearance: none;
-            cursor: pointer;
-        }
+        input::placeholder { color: rgba(255, 255, 255, 0.4); }
+        
+        select { cursor: pointer; }
+        option { background: #1a1f2c; color: #fff; }
 
         /* Buttons */
         .btn {
             width: 100%;
-            padding: 18px;
-            border-radius: var(--radius-md);
+            padding: 16px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            font-weight: 600;
             font-size: 16px;
-            font-weight: 700;
-            border: none;
+            letter-spacing: 0.5px;
             cursor: pointer;
-            transition: 0.2s ease;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 50%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent);
+            transform: skewX(-25deg);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .btn:hover::after {
+            left: 200%;
+            transition: 0.7s ease-in-out;
+        }
+
+        .btn:active {
+            transform: translateY(0);
         }
 
         .btn-primary {
-            background: var(--accent);
-            color: #000;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(67, 56, 202, 0.8));
+            border-color: rgba(99, 102, 241, 0.5);
+            color: #fff;
         }
-
-        .btn-primary:active {
-            transform: scale(0.98);
-            background: var(--accent-hover);
+        
+        .btn-primary:hover {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(67, 56, 202, 0.9));
         }
 
         .btn-outline {
-            background: transparent;
-            color: var(--text-primary);
-            border: 2px solid var(--surface-light);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
+            color: #fff;
             margin-top: 12px;
         }
 
-        .btn-outline:active {
-            background: var(--surface-light);
+        .btn-outline:hover {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
+            border-color: rgba(255, 255, 255, 0.3);
         }
 
         /* App Header */
@@ -168,10 +234,9 @@
             font-size: 26px;
             font-weight: 800;
             letter-spacing: -0.5px;
-        }
-
-        .header-title span {
-            color: var(--accent);
+            background: linear-gradient(135deg, #fff, #a5b4fc);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
         /* Summary Cards */
@@ -183,46 +248,62 @@
         }
 
         .summary-card {
-            background: var(--surface);
             padding: 24px;
-            border-radius: var(--radius-lg);
+            border-radius: 20px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .summary-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
+        }
+
+        .summary-card:hover {
+            background: rgba(255, 255, 255, 0.04);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
 
         .summary-label {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #94a3b8;
             font-weight: 600;
             margin-bottom: 10px;
             display: block;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
         }
 
         .summary-val {
             font-size: 28px;
             font-weight: 800;
-            color: var(--text-primary);
+            background: linear-gradient(to right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
             letter-spacing: -0.5px;
-        }
-
-        .summary-val.highlight {
-            color: var(--accent);
         }
 
         /* Section Titles */
         .section-title {
             font-size: 20px;
-            font-weight: 700;
+            font-weight: 600;
             margin-bottom: 20px;
-            color: var(--text-primary);
-            letter-spacing: -0.5px;
+            color: #c7d2fe;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            padding-bottom: 10px;
         }
 
         /* Add Expense Form */
         .add-expense-card {
-            background: var(--surface);
             padding: 24px;
-            border-radius: var(--radius-lg);
+            border-radius: 20px;
             margin-bottom: 40px;
         }
 
@@ -234,9 +315,7 @@
         }
 
         @media (max-width: 450px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
+            .form-row { grid-template-columns: 1fr; }
         }
 
         /* History List View */
@@ -247,12 +326,17 @@
         }
 
         .history-item {
-            background: var(--surface);
             padding: 20px;
-            border-radius: var(--radius-md);
+            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            transition: all 0.3s ease;
+        }
+
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.06);
+            transform: translateY(-2px);
         }
 
         .history-left {
@@ -265,100 +349,96 @@
             width: 52px;
             height: 52px;
             border-radius: 50%;
-            background: var(--surface-light);
+            background: rgba(99, 102, 241, 0.15);
+            border: 1px solid rgba(99, 102, 241, 0.3);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 22px;
+            font-size: 20px;
             font-weight: 700;
-            color: var(--accent);
+            color: #a5b4fc;
+            box-shadow: inset 0 2px 10px rgba(99, 102, 241, 0.2);
         }
 
         .history-details h4 {
             font-size: 16px;
             font-weight: 600;
             margin-bottom: 6px;
+            color: #e6edf3;
         }
 
         .history-details p {
             font-size: 13px;
-            color: var(--text-secondary);
+            color: #94a3b8;
             font-weight: 500;
         }
 
         .history-amount {
             font-size: 18px;
-            font-weight: 800;
-            color: var(--text-primary);
+            font-weight: 700;
+            color: #fff;
         }
 
         .empty-state {
             text-align: center;
-            color: var(--text-secondary);
+            color: #94a3b8;
             padding: 40px;
-            background: var(--surface);
-            border-radius: var(--radius-lg);
+            border-radius: 20px;
             font-weight: 500;
         }
 
         /* Bottom Nav (Mobile) */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
+            bottom: 0px;
             left: 0;
             right: 0;
-            background: rgba(18, 18, 18, 0.95);
-            backdrop-filter: blur(15px);
+            background: rgba(13, 17, 23, 0.85);
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             display: flex;
             justify-content: space-around;
             padding: 16px 20px 24px;
-            border-top: 1px solid var(--surface-light);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 100;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
 
         .nav-item {
-            color: var(--text-secondary);
-            font-size: 13px;
+            color: #94a3b8;
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            padding: 10px 20px;
+            padding: 10px 24px;
             border-radius: 100px;
-            transition: 0.2s;
+            transition: all 0.3s ease;
         }
 
         .nav-item.active {
-            background: rgba(198, 255, 0, 0.1);
-            color: var(--accent);
+            background: rgba(99, 102, 241, 0.15);
+            color: #a5b4fc;
+            border: 1px solid rgba(99, 102, 241, 0.3);
         }
 
         @media (min-width: 768px) {
-            .bottom-nav {
-                display: none;
-            }
-
-            #appLayoutWrapper {
-                padding-bottom: 40px;
-            }
-
-            .history-item {
-                transition: 0.2s;
-            }
-
-            .history-item:hover {
-                transform: translateX(5px);
-                background: var(--surface-light);
-            }
+            .bottom-nav { display: none; }
+            #appLayoutWrapper { padding-bottom: 40px; }
         }
     </style>
 </head>
 
 <body>
 
+    <!-- Liquid Background Elements -->
+    <div class="blob-bg blob-1"></div>
+    <div class="blob-bg blob-2"></div>
+    <div class="blob-bg blob-3"></div>
+
     <!-- AUTH SCREEN -->
     <div id="authLayoutWrapper">
-        <div class="auth-card">
-            <h1>axio<span>.</span></h1>
-            <p>Finance management, made simple.</p>
+        <div class="glass-panel auth-card">
+            <h1>Dashboard</h1>
+            <p>Smart finance management, reimagined.</p>
 
             <div class="input-group">
                 <input type="email" id="email" placeholder="Email Address" required>
@@ -377,26 +457,25 @@
         <div class="container">
 
             <div class="header">
-                <div class="header-title">axio<span>.</span></div>
-                <button onclick="logout()"
-                    style="background:var(--surface-light); padding:10px 20px; border-radius:100px; border:none; color:var(--text-primary); font-weight:600; cursor:pointer;">Logout</button>
+                <div class="header-title">Finance.</div>
+                <button onclick="logout()" class="btn btn-outline" style="width:auto; padding:8px 20px; font-size:14px; margin-top:0;">Logout</button>
             </div>
 
             <!-- Summary -->
             <div class="summary-grid">
-                <div class="summary-card">
-                    <span class="summary-label">Today's Spends</span>
-                    <div class="summary-val highlight" id="dailyTotal">₹0.00</div>
+                <div class="glass-panel summary-card">
+                    <span class="summary-label">Today's Expense</span>
+                    <div class="summary-val" id="dailyTotal">₹0.00</div>
                 </div>
-                <div class="summary-card">
-                    <span class="summary-label">Monthly Spends</span>
+                <div class="glass-panel summary-card">
+                    <span class="summary-label">Monthly Expense</span>
                     <div class="summary-val" id="monthlyTotal">₹0.00</div>
                 </div>
             </div>
 
             <!-- Add Expense -->
-            <h3 class="section-title">Add Spend</h3>
-            <div class="add-expense-card">
+            <h3 class="section-title">Record Expense</h3>
+            <div class="glass-panel add-expense-card">
                 <div class="input-group">
                     <input type="number" id="amount" placeholder="Amount (₹)">
                 </div>
@@ -407,7 +486,7 @@
                     <div class="input-group" style="margin:0;">
                         <select id="payment_mode">
                             <option value="CASH">Cash</option>
-                            <option value="UPI">UPI / PayLater</option>
+                            <option value="UPI">UPI / Digital</option>
                         </select>
                     </div>
                 </div>
@@ -419,8 +498,7 @@
                         <input type="text" id="description" placeholder="Optional Note">
                     </div>
                 </div>
-                <button class="btn btn-primary" style="margin-top: 16px;" onclick="submitExpense()">Confirm
-                    Payment</button>
+                <button class="btn btn-primary" style="margin-top: 16px;" onclick="submitExpense()">Add Expense</button>
             </div>
 
             <!-- History List -->
@@ -434,7 +512,7 @@
         <!-- Mobile Bottom Nav -->
         <div class="bottom-nav">
             <div class="nav-item active" onclick="window.scrollTo({top:0, behavior:'smooth'})">Home</div>
-            <div class="nav-item" onclick="document.getElementById('amount').focus()">+ Spend</div>
+            <div class="nav-item" onclick="document.getElementById('amount').focus()">+ Expense</div>
         </div>
     </div>
 
@@ -533,14 +611,13 @@
 
                 if (data && data.length > 0) {
                     data.forEach(item => {
-                        // Extract first letter for the circle avatar
                         let initial = "O";
                         if (item.category && item.category.length > 0) {
                             initial = item.category.charAt(0).toUpperCase();
                         }
 
                         list.innerHTML += `
-                            <div class="history-item">
+                            <div class="glass-panel history-item">
                                 <div class="history-left">
                                     <div class="cat-icon">${initial}</div>
                                     <div class="history-details">
@@ -553,7 +630,7 @@
                         `;
                     });
                 } else {
-                    list.innerHTML = `<div class="empty-state">No recent spends.<br>You're saving well!</div>`;
+                    list.innerHTML = `<div class="glass-panel empty-state">No recent spends.<br>You're saving well!</div>`;
                 }
             } catch (e) { console.error("Failed to load history"); }
         }
