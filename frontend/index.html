@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finance App</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
 
@@ -61,10 +62,21 @@
         }
 
         @keyframes floatBlob {
-            0% { transform: translate(0, 0) scale(1); }
-            33% { transform: translate(30px, -50px) scale(1.1); }
-            66% { transform: translate(-20px, 20px) scale(0.9); }
-            100% { transform: translate(0, 0) scale(1); }
+            0% {
+                transform: translate(0, 0) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
         }
 
         /* Essential Glass Utility */
@@ -153,10 +165,18 @@
             box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1);
         }
 
-        input::placeholder { color: rgba(255, 255, 255, 0.4); }
-        
-        select { cursor: pointer; }
-        option { background: #1a1f2c; color: #fff; }
+        input::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+        }
+
+        select {
+            cursor: pointer;
+        }
+
+        option {
+            background: #1a1f2c;
+            color: #fff;
+        }
 
         /* Buttons */
         .btn {
@@ -190,7 +210,7 @@
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
-        
+
         .btn:hover::after {
             left: 200%;
             transition: 0.7s ease-in-out;
@@ -205,7 +225,7 @@
             border-color: rgba(99, 102, 241, 0.5);
             color: #fff;
         }
-        
+
         .btn-primary:hover {
             background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(67, 56, 202, 0.9));
         }
@@ -315,7 +335,9 @@
         }
 
         @media (max-width: 450px) {
-            .form-row { grid-template-columns: 1fr; }
+            .form-row {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* History List View */
@@ -401,7 +423,7 @@
             padding: 16px 20px 24px;
             border-top: 1px solid rgba(255, 255, 255, 0.1);
             z-index: 100;
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
+            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
         }
 
         .nav-item {
@@ -421,8 +443,13 @@
         }
 
         @media (min-width: 768px) {
-            .bottom-nav { display: none; }
-            #appLayoutWrapper { padding-bottom: 40px; }
+            .bottom-nav {
+                display: none;
+            }
+
+            #appLayoutWrapper {
+                padding-bottom: 40px;
+            }
         }
     </style>
 </head>
@@ -458,7 +485,8 @@
 
             <div class="header">
                 <div class="header-title">Finance.</div>
-                <button onclick="logout()" class="btn btn-outline" style="width:auto; padding:8px 20px; font-size:14px; margin-top:0;">Logout</button>
+                <button onclick="logout()" class="btn btn-outline"
+                    style="width:auto; padding:8px 20px; font-size:14px; margin-top:0;">Logout</button>
             </div>
 
             <!-- Summary -->
@@ -470,6 +498,15 @@
                 <div class="glass-panel summary-card">
                     <span class="summary-label">Monthly Expense</span>
                     <div class="summary-val" id="monthlyTotal">₹0.00</div>
+                </div>
+            </div>
+
+            <!-- Expenses Chart -->
+            <div class="glass-panel" style="padding: 24px; border-radius: 20px; margin-bottom: 40px; display: none;"
+                id="chartContainer">
+                <h3 class="section-title" style="margin-top: 0; border: none;">Spends by Category</h3>
+                <div style="position: relative; height: 250px; width: 100%;">
+                    <canvas id="expenseChart"></canvas>
                 </div>
             </div>
 
@@ -517,15 +554,20 @@
     </div>
 
     <script>
+        let expenseChartInstance = null;
+
         window.onload = function () {
             const today = new Date().toISOString().split("T")[0];
-            document.getElementById("expense_date").value = today;
+            const dateInput = document.getElementById("expense_date");
+            dateInput.value = today;
+            dateInput.max = today; // Restrict future dates
 
             const token = localStorage.getItem("token");
             if (token) {
                 showApp();
                 loadSummary();
                 loadHistory();
+                loadChart();
             }
         };
 
@@ -584,6 +626,7 @@
                     showApp();
                     loadSummary();
                     loadHistory();
+                    loadChart();
                 } else {
                     alert(data.detail || "Login failed");
                 }
@@ -661,14 +704,73 @@
                     document.getElementById("amount").value = "";
                     document.getElementById("category").value = "";
                     document.getElementById("description").value = "";
-                    document.getElementById("expense_date").value = new Date().toISOString().split("T")[0];
+
+                    const newToday = new Date().toISOString().split("T")[0];
+                    const dateInput = document.getElementById("expense_date");
+                    dateInput.value = newToday;
+                    dateInput.max = newToday;
+
                     loadSummary();
                     loadHistory();
+                    loadChart();
                 } else {
                     alert("Failed to add expense.");
                 }
             } catch (e) {
                 alert("Error connecting to server.");
+            }
+        }
+
+        async function loadChart() {
+            try {
+                const activeDate = document.getElementById("expense_date").value || new Date().toISOString().split("T")[0];
+                const data = await fetch("/expenses/category-summary?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
+
+                const chartContainer = document.getElementById("chartContainer");
+
+                if (!data || data.length === 0) {
+                    chartContainer.style.display = "none";
+                    return;
+                }
+
+                chartContainer.style.display = "block";
+
+                const labels = data.map(item => item.category);
+                const values = data.map(item => item.total);
+
+                const ctx = document.getElementById("expenseChart").getContext("2d");
+
+                if (expenseChartInstance) {
+                    expenseChartInstance.destroy();
+                }
+
+                expenseChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            data: values,
+                            backgroundColor: [
+                                '#C6FF00', '#00f2fe', '#f093fb', '#43e97b', '#a5b4fc', '#f5576c'
+                            ],
+                            borderWidth: 0,
+                            hoverOffset: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { color: '#e6edf3', font: { family: 'Outfit', size: 13 } }
+                            }
+                        },
+                        cutout: '75%'
+                    }
+                });
+            } catch (e) {
+                console.error("Failed to load chart", e);
             }
         }
 

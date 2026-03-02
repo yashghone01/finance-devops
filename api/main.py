@@ -171,6 +171,28 @@ def get_monthly_total(target_date: str, current_user: dict = Depends(get_current
     return {"monthly_total": float(result) if result else 0.0}
 
 
+@app.get("/expenses/category-summary")
+def get_category_summary(target_date: str, current_user: dict = Depends(get_current_user)):
+    query = text("""
+        SELECT category, SUM(amount) as total
+        FROM transactions
+        WHERE date_trunc('month', expense_date) =
+              date_trunc('month', CAST(:target_date AS DATE))
+        AND user_id = :user_id
+        GROUP BY category
+        ORDER BY total DESC
+    """)
+
+    with engine.connect() as connection:
+        result = connection.execute(query, {
+            "user_id": current_user["id"],
+            "target_date": target_date
+        })
+        rows = [{"category": row.category, "total": float(row.total)} for row in result]
+
+    return rows
+
+
 @app.get("/expenses/history")
 def get_recent_expenses(current_user: dict = Depends(get_current_user)):
     query = text("""
