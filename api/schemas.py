@@ -7,3 +7,14 @@ class ExpenseCreate(BaseModel):
     payment_mode: str
     description: str
     expense_date: date
+    type: str = "EXPENSE"
+
+class BudgetUpdate(BaseModel):
+    monthly_budget: float
+
+class OTPRequest(BaseModel):
+    email: str
+
+class OTPVerify(BaseModel):
+    email: str
+    otp: str

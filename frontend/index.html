@@ -415,36 +415,59 @@
             bottom: 0px;
             left: 0;
             right: 0;
-            background: rgba(13, 17, 23, 0.85);
+            background: rgba(13, 17, 23, 0.95);
             backdrop-filter: blur(25px);
             -webkit-backdrop-filter: blur(25px);
             display: flex;
             justify-content: space-around;
+            align-items: center;
             padding: 16px 20px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
             z-index: 100;
-            box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
         }
 
         .nav-item {
-            color: #94a3b8;
-            font-size: 14px;
-            font-weight: 600;
+            color: #64748b;
             cursor: pointer;
-            padding: 10px 24px;
-            border-radius: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             transition: all 0.3s ease;
+            position: relative;
+            padding: 8px;
+        }
+
+        .nav-item svg {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2.5;
         }
 
         .nav-item.active {
-            background: rgba(99, 102, 241, 0.15);
-            color: #a5b4fc;
-            border: 1px solid rgba(99, 102, 241, 0.3);
+            color: #C6FF00;
+        }
+        
+        .nav-item.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 24px;
+            height: 3px;
+            background: #C6FF00;
+            border-radius: 4px;
+            box-shadow: 0 0 8px rgba(198, 255, 0, 0.6);
         }
 
         @media (min-width: 768px) {
             .bottom-nav {
-                display: none;
+                max-width: 600px;
+                margin: 0 auto;
+                left: 50%;
+                transform: translateX(-50%);
+                border-radius: 24px 24px 0 0;
             }
 
             #appLayoutWrapper {
@@ -462,20 +485,40 @@
     <div class="blob-bg blob-3"></div>
 
     <!-- AUTH SCREEN -->
-    <div id="authLayoutWrapper">
-        <div class="glass-panel auth-card">
-            <h1>Dashboard</h1>
-            <p>Smart finance management, reimagined.</p>
-
-            <div class="input-group">
-                <input type="email" id="email" placeholder="Email Address" required>
-            </div>
-            <div class="input-group">
-                <input type="password" id="password" placeholder="Password" required>
+    <div id="authLayoutWrapper" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; z-index: 10; position: relative;">
+        <div class="glass-panel" style="width: 100%; max-width: 400px; padding: 40px 30px; text-align: left; display: flex; flex-direction: column; gap: 24px;">
+            
+            <!-- Logo Area -->
+            <div style="text-align: center; margin-bottom: 10px;">
+                <h1 style="color: #C6FF00; font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin: 0; line-height: 1;">Finance<br>Manager</h1>
             </div>
 
-            <button class="btn btn-primary" onclick="login()">Login</button>
-            <button class="btn btn-outline" onclick="register()">Create Account</button>
+            <h2 style="color: #e6edf3; font-size: 22px; font-weight: 500; margin: 0; line-height: 1.3; text-align: center;">login to supercharge<br>your finance</h2>
+
+            <!-- Email Input -->
+            <div id="emailInputBlock" style="margin-top: 10px;">
+                <label style="display: block; color: #94a3b8; font-size: 13px; margin-bottom: 8px;">Email Address</label>
+                <div style="display: flex; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden; transition: border-color 0.3s ease;">
+                    <input type="email" id="auth_email" placeholder="you@example.com" style="background: transparent; border: none; padding: 14px 16px; color: #fff; font-size: 16px; width: 100%; outline: none;" required>
+                </div>
+            </div>
+
+            <!-- Main CTA -->
+            <button id="getStartedBtn" class="btn btn-primary" onclick="requestOTP()" style="margin: 30px 0 10px 0; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;">
+                Get started
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+            </button>
+            
+            <!-- OTP Input (Hidden initially) -->
+            <div id="otpSection" style="display: none;">
+                <label style="display: block; color: #94a3b8; font-size: 13px; margin-bottom: 8px;">Enter OTP sent to your email</label>
+                <input type="text" id="auth_otp" placeholder="0000" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 14px 16px; color: #C6FF00; border-radius: 12px; font-size: 20px; font-weight: 700; width: 100%; outline: none; box-sizing: border-box; text-align: center; letter-spacing: 8px;" maxlength="4">
+                <button onclick="verifyOTP()" class="btn btn-primary" style="margin: 20px 0 0 0; width: 100%;">Verify & Login</button>
+            </div>
+
+            <div style="text-align: center; color: #94a3b8; font-size: 11px; margin-top: 10px;">
+                New account will be created automatically for new emails
+            </div>
         </div>
     </div>
 
@@ -489,67 +532,267 @@
                     style="width:auto; padding:8px 20px; font-size:14px; margin-top:0;">Logout</button>
             </div>
 
-            <!-- Summary -->
-            <div class="summary-grid">
-                <div class="glass-panel summary-card">
-                    <span class="summary-label">Today's Expense</span>
-                    <div class="summary-val" id="dailyTotal">₹0.00</div>
+            <!-- TAB VIEWS -->
+
+            <!-- 1. Home View -->
+            <div id="view-home" class="tab-view" style="display: block;">
+                <!-- Summary -->
+                <div class="summary-grid">
+                    <div class="glass-panel summary-card">
+                        <span class="summary-label">Today's Expense</span>
+                        <div class="summary-val" id="dailyTotal">₹0.00</div>
+                    </div>
+                    <div class="glass-panel summary-card">
+                        <span class="summary-label">Monthly Expense</span>
+                        <div class="summary-val" id="monthlyTotal">₹0.00</div>
+                    </div>
                 </div>
-                <div class="glass-panel summary-card">
-                    <span class="summary-label">Monthly Expense</span>
-                    <div class="summary-val" id="monthlyTotal">₹0.00</div>
+
+                <!-- History Header -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">
+                    <h3 class="section-title" style="margin: 0; border: none; padding: 0;">Recent Transactions</h3>
+                    <button class="btn btn-primary" onclick="showAddExpense()" style="width: auto; padding: 6px 16px; border-radius: 20px; font-size: 14px; margin: 0; display: flex; align-items: center; gap: 6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add
+                    </button>
+                </div>
+                <!-- History List -->
+                <div class="history-list" id="historyList">
+                    <!-- Dynamically populated -->
                 </div>
             </div>
 
-            <!-- Expenses Chart -->
-            <div class="glass-panel" style="padding: 24px; border-radius: 20px; margin-bottom: 40px; display: none;"
-                id="chartContainer">
-                <h3 class="section-title" style="margin-top: 0; border: none;">Spends by Category</h3>
-                <div style="position: relative; height: 250px; width: 100%;">
-                    <canvas id="expenseChart"></canvas>
+            <!-- 2. Analysis View -->
+            <div id="view-analysis" class="tab-view" style="display: none;">
+                <!-- Budget / Income header area -->
+                <div style="text-align: center; margin-bottom: 24px; padding: 20px; border-radius: 50%; width: 220px; height: 220px; margin: 0 auto 30px; border: 8px solid rgba(255,255,255,0.05); border-top: 8px solid #C6FF00; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="font-size: 14px; color: #94a3b8; font-weight: 500;">Spent this month</div>
+                    <div class="summary-val" id="analysisMonthlyTotal" style="font-size: 32px; line-height: 1.2;">₹0.00</div>
+                </div>
+
+                <!-- Two Buttons -->
+                <div style="display: flex; gap: 12px; margin-bottom: 30px;">
+                    <button class="btn btn-outline" style="flex: 1; margin: 0; padding: 12px; font-size: 14px;" onclick="showIncomePage()">Income</button>
+                    <button class="btn btn-outline" style="flex: 1; margin: 0; padding: 12px; font-size: 14px;" onclick="showBudgetPage()">Set monthly budget</button>
+                </div>
+
+                <!-- Expenses Chart -->
+                <div class="glass-panel" style="padding: 24px; border-radius: 20px; margin-bottom: 40px;" id="chartContainer">
+                    <h3 class="section-title" style="margin-top: 0; border: none;">Spends by Category</h3>
+                    <div style="position: relative; height: 250px; width: 100%;">
+                        <canvas id="expenseChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Recent Transactions -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; border-bottom: 1px solid rgba(255, 255, 255, 0.1); padding-bottom: 10px;">
+                    <h3 class="section-title" style="margin: 0; border: none; padding: 0;">Recent transactions</h3>
+                    <button class="btn btn-primary" onclick="showAddExpense()" style="width: auto; padding: 6px 16px; border-radius: 20px; font-size: 14px; margin: 0; display: flex; align-items: center; gap: 6px;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        Add
+                    </button>
+                </div>
+                <div class="history-list" id="analysisHistoryList" style="margin-bottom: 40px;">
+                    <!-- Auto populated via JS from existing loadHistory -->
+                </div>
+
+                <!-- Dues & Reminders -->
+                <div class="glass-panel" style="padding: 24px; border-radius: 20px; margin-bottom: 40px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 class="section-title" style="margin: 0; border: none; padding: 0;">Dues & Reminders</h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    </div>
+                    <div style="background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; margin-bottom: 16px;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px;">
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <div style="width: 24px; height: 24px; background: #a5b4fc; color: #0d1117; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: bold;">f</div>
+                                <span style="font-size: 14px; color: #e6edf3; font-weight: 500;">13 Mar 26</span>
+                            </div>
+                            <span style="font-size: 12px; color: #f5576c;">10 days ago</span>
+                        </div>
+                        <div style="font-size: 16px; color: #e6edf3; margin-bottom: 16px; font-weight: 600;">MSEB (8040)</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <span style="font-size: 24px; font-weight: 700; color: #fff;">₹680</span>
+                            <div style="width: 32px; height: 32px; border: 1px solid #f5576c; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #f5576c;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; align-items: center; color: #e6edf3; font-weight: 600; font-size: 14px;">
+                        <span>Total ₹680</span>
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                    </div>
+                </div>
+
+                <!-- Accounts -->
+                <div class="glass-panel" style="padding: 24px; border-radius: 20px; margin-bottom: 40px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                        <h3 class="section-title" style="margin: 0; border: none; padding: 0;">Accounts</h3>
+                    </div>
+                    <div style="display: flex; gap: 16px; overflow-x: auto; padding-bottom: 10px;">
+                        <div style="min-width: 250px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; display: flex; overflow: hidden; height: 120px;">
+                            <div style="width: 35%; background: #8fb1bd; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; color: #0d1117;">
+                                <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.8); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #03a9f4;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 16px;">SBI</div>
+                                    <div style="font-size: 12px; opacity: 0.8;">xx7818</div>
+                                </div>
+                            </div>
+                            <div style="flex: 1; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="font-weight: 700; font-size: 18px; color: #e6edf3;">₹158</span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="7" y1="17" x2="17" y2="7"></line><polyline points="7 7 17 7 17 17"></polyline></svg>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; color: #94a3b8; font-size: 12px;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                                    Not available
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-left:4px;"><polyline points="23 4 23 10 17 10"></polyline><polyline points="1 20 1 14 7 14"></polyline><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path></svg>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div style="min-width: 250px; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; display: flex; overflow: hidden; height: 120px;">
+                            <div style="width: 35%; background: #4fc3f7; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; color: #0d1117;">
+                                <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.8); border-radius: 6px; display: flex; align-items: center; justify-content: center; color: #03a9f4;">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 16px;">HDFC</div>
+                                    <div style="font-size: 12px; opacity: 0.8;">xx4383</div>
+                                </div>
+                            </div>
+                            <div style="flex: 1; padding: 16px; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-end;">
+                                <div style="display: flex; align-items: center; gap: 6px;">
+                                    <span style="font-weight: 700; font-size: 18px; color: #e6edf3;">₹2,450</span>
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#43e97b" stroke-width="2"><line x1="17" y1="7" x2="7" y2="17"></line><polyline points="17 17 17 7 7 7"></polyline></svg>
+                                </div>
+                                <div style="display: flex; align-items: center; gap: 6px; color: #43e97b; font-size: 12px;">
+                                    Auto-read active
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 16px; font-size: 12px; color: #f5576c; font-style: italic;">
+                        *Auto-fetching bank SMS/Messages relies on a companion mobile app sync in the background.
+                    </div>
                 </div>
             </div>
 
-            <!-- Add Expense -->
-            <h3 class="section-title">Record Expense</h3>
-            <div class="glass-panel add-expense-card">
-                <div class="input-group">
-                    <input type="number" id="amount" placeholder="Amount (₹)">
-                </div>
-                <div class="form-row">
-                    <div class="input-group" style="margin:0;">
-                        <input type="text" id="category" placeholder="Category (Food, etc)">
-                    </div>
-                    <div class="input-group" style="margin:0;">
-                        <select id="payment_mode">
-                            <option value="CASH">Cash</option>
-                            <option value="UPI">UPI / Digital</option>
-                        </select>
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="input-group" style="margin:0;">
-                        <input type="date" id="expense_date">
-                    </div>
-                    <div class="input-group" style="margin:0;">
-                        <input type="text" id="description" placeholder="Optional Note">
-                    </div>
-                </div>
-                <button class="btn btn-primary" style="margin-top: 16px;" onclick="submitExpense()">Add Expense</button>
+            <!-- 3. Groups View -->
+            <div id="view-groups" class="tab-view" style="display: none;">
+                <h3 class="section-title">Groups</h3>
+                <div class="glass-panel empty-state" style="padding: 40px; text-align: center;">Coming Soon</div>
             </div>
 
-            <!-- History List -->
-            <h3 class="section-title">Recent Transactions</h3>
-            <div class="history-list" id="historyList">
-                <!-- Dynamically populated -->
+            <!-- 4. Account View -->
+            <div id="view-account" class="tab-view" style="display: none;">
+                <h3 class="section-title">Account Management</h3>
+                <div class="glass-panel empty-state" style="padding: 40px; text-align: center;">Coming Soon</div>
+            </div>
+
+            <!-- 5. Income View -->
+            <div id="view-income" class="tab-view" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                    <button class="btn btn-outline" onclick="switchTab(document.querySelectorAll('.nav-item')[1], 'analysis')" style="width:auto; padding:8px; border-radius:50%; margin:0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                    <h3 class="section-title" style="margin: 0; border: none; padding: 0;">Incoming Transactions</h3>
+                </div>
+                <div class="history-list" id="incomeHistoryList"></div>
+            </div>
+
+            <!-- 6. Budget View -->
+            <div id="view-budget" class="tab-view" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                    <button class="btn btn-outline" onclick="switchTab(document.querySelectorAll('.nav-item')[1], 'analysis')" style="width:auto; padding:8px; border-radius:50%; margin:0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                    <h3 class="section-title" style="margin: 0; border: none; padding: 0;">Set Monthly Budget</h3>
+                </div>
+                <div class="glass-panel" style="padding: 24px; border-radius: 20px;">
+                    <p style="color: #94a3b8; margin-bottom: 16px;">Set a budget to track your monthly spending. You'll be alerted when you overspend.</p>
+                    <div class="input-group">
+                        <input type="number" id="monthly_budget_input" placeholder="Enter amount (₹)">
+                    </div>
+                    <button class="btn btn-primary" onclick="saveBudget()">Save Budget</button>
+                </div>
+            </div>
+
+            <!-- ADD EXPENSE SUB-VIEW -->
+            <div id="view-add-expense" class="tab-view" style="display: none;">
+                <div style="display: flex; align-items: center; gap: 16px; margin-bottom: 20px;">
+                    <button class="btn btn-outline" onclick="switchTab(document.querySelector('.nav-item.active') || document.querySelectorAll('.nav-item')[0], 'home')" style="width:auto; padding:8px; border-radius:50%; margin:0;">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                    </button>
+                    <h3 class="section-title" id="addExpenseTitle" style="margin: 0; border: none; padding: 0;">Record Expense</h3>
+                </div>
+                <div class="glass-panel add-expense-card">
+                    <div class="input-group" style="display: flex; gap: 10px; margin-bottom: 20px;">
+                        <button id="btnTypeExpense" class="btn btn-primary" style="margin:0; flex:1;" onclick="setTxnType('EXPENSE')">Expense</button>
+                        <button id="btnTypeIncome" class="btn btn-outline" style="margin:0; flex:1;" onclick="setTxnType('INCOME')">Income</button>
+                    </div>
+                    <input type="hidden" id="txn_type" value="EXPENSE">
+                    <div class="input-group">
+                        <input type="number" id="amount" placeholder="Amount (₹)">
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group" style="margin:0;">
+                            <input type="text" id="category" placeholder="Category (Food, etc)">
+                        </div>
+                        <div class="input-group" style="margin:0;">
+                            <select id="payment_mode">
+                                <option value="CASH">Cash</option>
+                                <option value="UPI">UPI / Digital</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="input-group" style="margin:0;">
+                            <input type="date" id="expense_date">
+                        </div>
+                        <div class="input-group" style="margin:0;">
+                            <input type="text" id="description" placeholder="Optional Note">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary" style="margin-top: 16px;" onclick="submitExpense()">Add Expense</button>
+                </div>
             </div>
 
         </div>
 
         <!-- Mobile Bottom Nav -->
         <div class="bottom-nav">
-            <div class="nav-item active" onclick="window.scrollTo({top:0, behavior:'smooth'})">Home</div>
-            <div class="nav-item" onclick="document.getElementById('amount').focus()">+ Expense</div>
+            <div class="nav-item active" onclick="switchTab(this, 'home')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                    <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                </svg>
+            </div>
+            <div class="nav-item" onclick="switchTab(this, 'analysis')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                </svg>
+            </div>
+            <div class="nav-item" onclick="switchTab(this, 'groups')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="16 3 21 3 21 8"></polyline>
+                    <line x1="4" y1="20" x2="21" y2="3"></line>
+                    <polyline points="21 16 21 21 16 21"></polyline>
+                    <line x1="15" y1="15" x2="21" y2="21"></line>
+                    <line x1="4" y1="4" x2="9" y2="9"></line>
+                </svg>
+            </div>
+            <div class="nav-item" onclick="switchTab(this, 'account')">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <path d="M9 8h6M9 11h6c0 1.5-1 3-3 3H9v4"></path>
+                    <path d="M12 14l3 4"></path>
+                </svg>
+            </div>
         </div>
     </div>
 
@@ -583,52 +826,64 @@
             };
         }
 
-        async function register() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            if (!email || !password) return alert("Please enter email and password");
+        async function requestOTP() {
+            const email = document.getElementById("auth_email").value;
+
+            if (!email || !email.includes("@")) return alert("Please enter a valid email address");
+
+            document.getElementById("getStartedBtn").innerText = "Sending OTP...";
 
             try {
-                const response = await fetch("/register?email=" + encodeURIComponent(email) + "&password=" + encodeURIComponent(password), {
-                    method: "POST"
-                });
-                if (response.ok) {
-                    alert("Account created successfully. Please login.");
-                } else {
-                    const data = await response.json();
-                    alert(data.detail || "Registration failed");
-                }
-            } catch (e) {
-                alert("Error connecting to server.");
-            }
-        }
-
-        async function login() {
-            const email = document.getElementById("email").value;
-            const password = document.getElementById("password").value;
-            if (!email || !password) return alert("Please enter email and password");
-
-            const formData = new URLSearchParams();
-            formData.append("username", email);
-            formData.append("password", password);
-
-            try {
-                const response = await fetch("/login", {
+                const response = await fetch("/auth/send-otp", {
                     method: "POST",
-                    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-                    body: formData
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email })
                 });
 
                 const data = await response.json();
 
-                if (data.access_token) {
+                if (response.ok) {
+                    document.getElementById("emailInputBlock").style.display = "none";
+                    document.getElementById("getStartedBtn").style.display = "none";
+                    document.getElementById("otpSection").style.display = "block";
+                    document.getElementById("auth_otp").focus();
+                } else {
+                    document.getElementById("getStartedBtn").innerText = "Get started";
+                    alert(data.detail || "Failed to send OTP.");
+                }
+            } catch (e) {
+                alert("Error connecting to server. Is the backend running?");
+            }
+        }
+
+        async function verifyOTP() {
+            const email = document.getElementById("auth_email").value;
+            const otp = document.getElementById("auth_otp").value;
+
+            if (otp.length < 4) return alert("Please enter the full OTP");
+
+            try {
+                const response = await fetch("/auth/verify-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email: email, otp: otp })
+                });
+
+                const data = await response.json();
+
+                if (response.ok && data.access_token) {
                     localStorage.setItem("token", data.access_token);
+                    document.getElementById("auth_otp").value = "";
+                    document.getElementById("emailInputBlock").style.display = "block";
+                    document.getElementById("getStartedBtn").style.display = "flex";
+                    document.getElementById("getStartedBtn").innerText = "Get started";
+                    document.getElementById("otpSection").style.display = "none";
                     showApp();
                     loadSummary();
                     loadHistory();
                     loadChart();
                 } else {
-                    alert(data.detail || "Login failed");
+                    alert(data.detail || "Invalid OTP.");
                 }
             } catch (e) {
                 alert("Error connecting to server.");
@@ -640,9 +895,28 @@
                 const activeDate = document.getElementById("expense_date").value || new Date().toISOString().split("T")[0];
                 const daily = await fetch("/expenses/daily?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
                 const monthly = await fetch("/expenses/monthly?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
+                const budgetReq = await fetch("/budget", { headers: getAuthHeaders() }).then(res => res.json());
 
                 document.getElementById("dailyTotal").innerText = '₹ ' + Number(daily.daily_total || 0).toFixed(2);
                 document.getElementById("monthlyTotal").innerText = '₹ ' + Number(monthly.monthly_total || 0).toFixed(2);
+                
+                const mTotalEl = document.getElementById("analysisMonthlyTotal");
+                if(mTotalEl) mTotalEl.innerText = '₹ ' + Number(monthly.monthly_total || 0).toFixed(2);
+
+                let warnEl = document.getElementById("budgetWarning");
+                if (!warnEl) {
+                    warnEl = document.createElement("div");
+                    warnEl.id = "budgetWarning";
+                    warnEl.style = "background: rgba(245, 87, 108, 0.2); color: #f5576c; padding: 12px; border-radius: 12px; border: 1px solid #f5576c; margin-bottom: 20px;";
+                    document.querySelector(".summary-grid").parentNode.insertBefore(warnEl, document.querySelector(".summary-grid"));
+                }
+                
+                if (budgetReq.monthly_budget > 0 && monthly.monthly_total > budgetReq.monthly_budget) {
+                    warnEl.innerHTML = `<strong>Over Budget Alert!</strong> You've spent ₹${monthly.monthly_total} against your ₹${budgetReq.monthly_budget} budget.`;
+                    warnEl.style.display = 'block';
+                } else {
+                    warnEl.style.display = 'none';
+                }
             } catch (e) { console.error("Failed to load summary", e); }
         }
 
@@ -650,7 +924,8 @@
             try {
                 const data = await fetch("/expenses/history", { headers: getAuthHeaders() }).then(res => res.json());
                 const list = document.getElementById("historyList");
-                list.innerHTML = "";
+                const analysisList = document.getElementById("analysisHistoryList");
+                let htmlContent = "";
 
                 if (data && data.length > 0) {
                     data.forEach(item => {
@@ -659,7 +934,7 @@
                             initial = item.category.charAt(0).toUpperCase();
                         }
 
-                        list.innerHTML += `
+                        htmlContent += `
                             <div class="glass-panel history-item">
                                 <div class="history-left">
                                     <div class="cat-icon">${initial}</div>
@@ -673,15 +948,32 @@
                         `;
                     });
                 } else {
-                    list.innerHTML = `<div class="glass-panel empty-state">No recent spends.<br>You're saving well!</div>`;
+                    htmlContent = `<div class="glass-panel empty-state">No recent spends.<br>You're saving well!</div>`;
                 }
-            } catch (e) { console.error("Failed to load history"); }
+
+                if (list) list.innerHTML = htmlContent;
+                if (analysisList) analysisList.innerHTML = htmlContent;
+            } catch (e) { console.error("Failed to load history", e); }
+        }
+
+        function setTxnType(type) {
+            document.getElementById("txn_type").value = type;
+            if (type === 'EXPENSE') {
+                document.getElementById("btnTypeExpense").className = "btn btn-primary";
+                document.getElementById("btnTypeIncome").className = "btn btn-outline";
+                document.getElementById("addExpenseTitle").innerText = "Record Expense";
+            } else {
+                document.getElementById("btnTypeIncome").className = "btn btn-primary";
+                document.getElementById("btnTypeExpense").className = "btn btn-outline";
+                document.getElementById("addExpenseTitle").innerText = "Record Income";
+            }
         }
 
         async function submitExpense() {
             const amountVal = document.getElementById("amount").value;
             const categoryVal = document.getElementById("category").value;
             const dateVal = document.getElementById("expense_date").value;
+            const typeVal = document.getElementById("txn_type").value;
 
             if (!amountVal || !categoryVal || !dateVal) return alert("Amount, Category and Date are required.");
 
@@ -690,7 +982,8 @@
                 category: categoryVal,
                 payment_mode: document.getElementById("payment_mode").value,
                 description: document.getElementById("description").value || "",
-                expense_date: dateVal
+                expense_date: dateVal,
+                type: typeVal
             };
 
             try {
@@ -713,6 +1006,7 @@
                     loadSummary();
                     loadHistory();
                     loadChart();
+                    switchTab(document.querySelector('.nav-item'), 'home');
                 } else {
                     alert("Failed to add expense.");
                 }
@@ -774,9 +1068,98 @@
             }
         }
 
+        function showIncomePage() {
+            document.querySelectorAll('.tab-view').forEach(view => view.style.display = 'none');
+            document.getElementById('view-income').style.display = 'block';
+            window.scrollTo({top:0, behavior:'smooth'});
+            loadIncomeList();
+        }
+
+        function showBudgetPage() {
+            document.querySelectorAll('.tab-view').forEach(view => view.style.display = 'none');
+            document.getElementById('view-budget').style.display = 'block';
+            window.scrollTo({top:0, behavior:'smooth'});
+        }
+
+        async function saveBudget() {
+            const val = document.getElementById('monthly_budget_input').value;
+            if (!val) return alert('Enter budget');
+            try {
+                const res = await fetch('/budget', {
+                    method: 'PUT',
+                    headers: getAuthHeaders(),
+                    body: JSON.stringify({ monthly_budget: parseFloat(val) })
+                });
+                if(res.ok) {
+                    alert('Budget saved');
+                    loadSummary();
+                    switchTab(document.querySelectorAll('.nav-item')[1], 'analysis');
+                }
+            } catch(e) {}
+        }
+
+        async function loadIncomeList() {
+            try {
+                const data = await fetch("/income/history", { headers: getAuthHeaders() }).then(res => res.json());
+                const list = document.getElementById("incomeHistoryList");
+                list.innerHTML = "";
+
+                if (data && data.length > 0) {
+                    data.forEach(item => {
+                        let initial = item.category ? item.category.charAt(0).toUpperCase() : "I";
+                        list.innerHTML += `
+                            <div class="glass-panel history-item">
+                                <div class="history-left">
+                                    <div class="cat-icon" style="background: rgba(67, 233, 123, 0.15); border-color: rgba(67, 233, 123, 0.3); color: #43e97b;">${initial}</div>
+                                    <div class="history-details">
+                                        <h4>${item.category}</h4>
+                                        <p>${item.expense_date} • ${item.payment_mode}</p>
+                                    </div>
+                                </div>
+                                <div class="history-amount" style="color: #43e97b;">+₹${Number(item.amount).toFixed(2)}</div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    list.innerHTML = `<div class="glass-panel empty-state">No income recorded.</div>`;
+                }
+            } catch (e) { console.error("Failed to load income"); }
+        }
+
         function logout() {
             localStorage.removeItem("token");
             location.reload();
+        }
+
+        function switchTab(el, tabName) {
+            if (el) {
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+                el.classList.add('active');
+            }
+            
+            document.querySelectorAll('.tab-view').forEach(view => {
+                view.style.display = 'none';
+            });
+            
+            const targetView = document.getElementById('view-' + tabName);
+            if(targetView) targetView.style.display = 'block';
+            
+            window.scrollTo({top:0, behavior:'smooth'});
+            
+            if(tabName === 'home') {
+                loadHistory();
+                loadSummary();
+            } else if(tabName === 'analysis') {
+                loadChart();
+            }
+        }
+        
+        function showAddExpense() {
+            document.querySelectorAll('.tab-view').forEach(view => {
+                view.style.display = 'none';
+            });
+            document.getElementById('view-add-expense').style.display = 'block';
+            window.scrollTo({top:0, behavior:'smooth'});
         }
     </script>
 </body>
