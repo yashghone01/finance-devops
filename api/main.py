@@ -1,3 +1,9 @@
+import os
+import random
+import urllib.request
+import json
+from dotenv import load_dotenv
+load_dotenv()
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
@@ -5,12 +11,6 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import text
 from api.database import engine
 from api.schemas import ExpenseCreate, BudgetUpdate, OTPRequest, OTPVerify
-import smtplib
-from email.mime.text import MIMEText
-import random
-import os
-import urllib.request
-import json
 from api.auth import (
     hash_password,
     verify_password,
