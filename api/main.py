@@ -26,8 +26,6 @@ app = FastAPI()
 @app.on_event("startup")
 def create_tables():
     query = text("""
-        CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
-
         CREATE TABLE IF NOT EXISTS users (
             id SERIAL PRIMARY KEY,
             email VARCHAR(255) UNIQUE NOT NULL,
@@ -36,7 +34,7 @@ def create_tables():
         );
 
         CREATE TABLE IF NOT EXISTS transactions (
-            id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+            id SERIAL PRIMARY KEY,
             amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),
             category VARCHAR(100) NOT NULL,
             payment_mode VARCHAR(10) CHECK (payment_mode IN ('CASH','UPI')),
