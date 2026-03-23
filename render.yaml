@@ -10,6 +10,10 @@ services:
         fromDatabase:
           name: finance-db
           property: connectionString
+      - key: BREVO_API_KEY
+        sync: false # Set this in Render dashboard
+      - key: SENDER_EMAIL
+        sync: false # Set this in Render dashboard
 
 databases:
   # The Fully Managed PostgreSQL Database
