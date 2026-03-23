@@ -109,7 +109,10 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
     with engine.connect() as conn:
         user = conn.execute(query, {"email": form_data.username}).fetchone()
 
-    if not user or not verify_password(form_data.password, user.password_hash):
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    if not verify_password(form_data.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     access_token = create_access_token(user.id)
@@ -122,7 +125,9 @@ def login(form_data: OAuth2PasswordRequestForm = Depends()):
 # =============================
 
 otp_store = {}
-RESEND_API_KEY = os.getenv("RESEND_API_KEY", "re_Bk4BvoKs_JRG6XJ9CeWPKS3Udgz6VHkDv")
+# Brevo (Sendinblue) API Configuration
+BREVO_API_KEY = os.getenv("BREVO_API_KEY")
+SENDER_EMAIL = os.getenv("SENDER_EMAIL", "yashghone2004@gmail.com")
 
 @app.post("/auth/send-otp")
 def send_otp(req: OTPRequest):
@@ -133,25 +138,30 @@ def send_otp(req: OTPRequest):
     print(f"==============================")
 
     data = json.dumps({
-        "from": "onboarding@resend.dev",
-        "to": req.email,
-        "subject": "Finance Manager Login OTP",
-        "html": f"<p>Your Finance Manager Login OTP is: <strong style='color:#1c5218; font-size: 24px;'>{code}</strong></p><p>Do not share this with anyone.</p><br><p><small>Sent via Resend.</small></p>"
+        "sender": {"name": "Finance Manager", "email": SENDER_EMAIL},
+        "to": [{"email": req.email}],
+        "subject": "Your Login OTP",
+        "htmlContent": f"<html><body><p>Hello,</p><p>Your Finance Manager Login OTP is: <strong style='color:#1c5218; font-size: 24px;'>{code}</strong></p><p>Do not share this with anyone.</p></body></html>"
     }).encode("utf-8")
 
     try:
-        req_obj = urllib.request.Request("https://api.resend.com/emails", data=data)
-        req_obj.add_header("Authorization", f"Bearer {RESEND_API_KEY}")
+        req_obj = urllib.request.Request("https://api.brevo.com/v3/smtp/email", data=data)
+        req_obj.add_header("api-key", BREVO_API_KEY)
         req_obj.add_header("Content-Type", "application/json")
         req_obj.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
-        urllib.request.urlopen(req_obj)
-        return {"message": "OTP Sent Successfully via Resend"}
+        
+        with urllib.request.urlopen(req_obj) as response:
+            res_data = response.read().decode()
+            print(f"Brevo Success: {res_data}")
+            return {"message": "OTP Sent Successfully via Brevo"}
+            
     except urllib.error.HTTPError as e:
-        print(f"Resend HTTP Error: {e.code} - {e.read().decode()}")
-        return {"message": "OTP Generated (Resend blocked receiver domain)"}
+        err_msg = e.read().decode()
+        print(f"Brevo HTTP Error: {e.code} - {err_msg}")
+        return {"message": "Email fail", "fallback_code": code}
     except Exception as e:
-        print(f"Failed to send email via Resend: {e}")
-        return {"message": "OTP Generated (failed to send email)"}
+        print(f"Failed to send email via Brevo: {e}")
+        return {"message": "Email fail", "fallback_code": code}
 
 @app.post("/auth/verify-otp")
 def verify_otp_endpoint(req: OTPVerify):
@@ -166,10 +176,14 @@ def verify_otp_endpoint(req: OTPVerify):
     with engine.connect() as conn:
         user = conn.execute(text("SELECT id, password_hash FROM users WHERE email = :email"), {"email": req.email}).fetchone()
         if not user:
-            dummy_hash = hash_password(f"OTP_AUTH_{req.email}")
-            conn.execute(text("INSERT INTO users (email, password_hash) VALUES (:email, :hash)"), {"email": req.email, "hash": dummy_hash})
+            # Create new user with verified password
+            p_hash = hash_password(req.password or f"TEMP_PASS_{random.randint(1000,9999)}")
+            conn.execute(text("INSERT INTO users (email, password_hash) VALUES (:email, :hash)"), {"email": req.email, "hash": p_hash})
             conn.commit()
             user = conn.execute(text("SELECT id, password_hash FROM users WHERE email = :email"), {"email": req.email}).fetchone()
+        else:
+            # User already exists, if they got here via OTP (e.g. forgot password flow), we can log them in
+            pass
     
     return {"access_token": create_access_token(user.id), "token_type": "bearer"}
 
