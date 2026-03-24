@@ -583,6 +583,7 @@
     </div>
 
     <script>
+        const BASE_API_URL = "https://finance-api-docker.onrender.com";
         let currentOnboardingSlide = 1;
 
         function nextSlide() {
@@ -657,7 +658,7 @@
             formData.append("password", password);
 
             try {
-                const response = await fetch("/login", {
+                const response = await fetch(BASE_API_URL + "/login", {
                     method: "POST",
                     headers: { "Content-Type": "application/x-www-form-urlencoded" },
                     body: formData
@@ -686,7 +687,7 @@
             document.getElementById("getStartedBtn").innerText = "Checking...";
 
             try {
-                const response = await fetch("/auth/send-otp", {
+                const response = await fetch(BASE_API_URL + "/auth/send-otp", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: email })
@@ -718,7 +719,7 @@
             if (otp.length < 4) return alert("Please enter the full OTP");
 
             try {
-                const response = await fetch("/auth/verify-otp", {
+                const response = await fetch(BASE_API_URL + "/auth/verify-otp", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email: email, otp: otp, password: password })
@@ -747,9 +748,9 @@
         async function loadSummary() {
             try {
                 const activeDate = document.getElementById("expense_date").value || new Date().toISOString().split("T")[0];
-                const daily = await fetch("/expenses/daily?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
-                const monthly = await fetch("/expenses/monthly?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
-                const budgetReq = await fetch("/budget", { headers: getAuthHeaders() }).then(res => res.json());
+                const daily = await fetch(BASE_API_URL + "/expenses/daily?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
+                const monthly = await fetch(BASE_API_URL + "/expenses/monthly?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
+                const budgetReq = await fetch(BASE_API_URL + "/budget", { headers: getAuthHeaders() }).then(res => res.json());
 
                 document.getElementById("dailyTotal").innerText = '₹ ' + Number(daily.daily_total || 0).toFixed(2);
                 document.getElementById("monthlyTotal").innerText = '₹ ' + Number(monthly.monthly_total || 0).toFixed(2);
@@ -776,7 +777,7 @@
 
         async function loadHistory() {
             try {
-                const data = await fetch("/expenses/history", { headers: getAuthHeaders() }).then(res => res.json());
+                const data = await fetch(BASE_API_URL + "/expenses/history", { headers: getAuthHeaders() }).then(res => res.json());
                 const list = document.getElementById("historyList");
                 const analysisList = document.getElementById("analysisHistoryList");
                 let htmlContent = "";
@@ -841,7 +842,7 @@
             };
 
             try {
-                const response = await fetch("/expenses", {
+                const response = await fetch(BASE_API_URL + "/expenses", {
                     method: "POST",
                     headers: getAuthHeaders(),
                     body: JSON.stringify(data)
@@ -872,7 +873,7 @@
         async function loadChart() {
             try {
                 const activeDate = document.getElementById("expense_date").value || new Date().toISOString().split("T")[0];
-                const data = await fetch("/expenses/category-summary?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
+                const data = await fetch(BASE_API_URL + "/expenses/category-summary?target_date=" + activeDate, { headers: getAuthHeaders() }).then(res => res.json());
 
                 const chartContainer = document.getElementById("chartContainer");
 
@@ -954,7 +955,7 @@
 
         async function loadIncomeList() {
             try {
-                const data = await fetch("/income/history", { headers: getAuthHeaders() }).then(res => res.json());
+                const data = await fetch(BASE_API_URL + "/income/history", { headers: getAuthHeaders() }).then(res => res.json());
                 const list = document.getElementById("incomeHistoryList");
                 list.innerHTML = "";
 
