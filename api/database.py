@@ -10,8 +10,8 @@ DATABASE_URL = os.getenv(
     "postgresql://postgres:postgres@db:5432/finance_db"
 )
 
-# Retry connection until DB is ready
-for i in range(10):
+# Retry connection until DB is ready (Increased for Render cold starts)
+for i in range(30):
     try:
         engine = create_engine(DATABASE_URL)
         connection = engine.connect()

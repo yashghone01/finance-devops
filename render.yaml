@@ -1,22 +1,23 @@
 services:
-  # The FastAPI Web Server
+  # The FastAPI Web Server (Docker-based for reliability)
   - type: web
-    name: finance-api
-    env: python
-    buildCommand: "pip install -r requirements.txt"
-    startCommand: "uvicorn api.main:app --host 0.0.0.0 --port $PORT"
+    name: finance-api-docker
+    env: docker
+    plan: free
+    region: singapore # Change to your nearest region
+    dockerCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
         fromDatabase:
           name: finance-db
           property: connectionString
       - key: BREVO_API_KEY
-        sync: false # Set this in Render dashboard
+        sync: false # Set as "Secret" in dashboard
       - key: SENDER_EMAIL
-        sync: false # Set this in Render dashboard
+        sync: false # Set as "Secret" in dashboard
 
+# The Fully Managed PostgreSQL Database
 databases:
-  # The Fully Managed PostgreSQL Database
   - name: finance-db
     databaseName: finance
     user: finance_admin
