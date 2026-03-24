@@ -311,145 +311,60 @@
 </head>
 
 <body>
-
-    <!-- Animated Onboarding -->
-    <div id="onboardingWrapper">
-        <!-- Slide 1 -->
-        <div class="onboarding-slide active" id="slide1">
-            <div class="onboarding-visual">
-                <!-- Illustration 1: Pay Later -->
-                <svg viewBox="0 0 400 400" class="svg-illustration floating">
-                    <circle cx="200" cy="200" r="140" fill="rgba(198,255,0,0.05)" />
-                    <circle cx="100" cy="120" r="5" fill="#fff" opacity="0.4" />
-                    <circle cx="280" cy="150" r="10" fill="#fff" opacity="0.2" />
-                    <circle cx="300" cy="300" r="4" fill="#fff" opacity="0.5" />
-                    <!-- Apple Watch-style ring -->
-                    <circle cx="310" cy="100" r="50" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
-                    <rect x="290" y="80" width="40" height="40" rx="8" fill="rgba(198,255,0,0.1)" stroke="#C6FF00" stroke-width="1.5" />
-                    <!-- Jacket outline -->
-                    <path d="M100 350 Q100 250 150 220 L250 220 Q300 250 300 350" fill="none" stroke="white" stroke-width="1.5" opacity="0.6" />
-                    <path d="M150 220 L130 180 Q100 200 100 250" fill="none" stroke="white" stroke-width="1.5" opacity="0.3" />
-                    <!-- Giant L Arrow -->
-                    <path class="l-arrow-main" d="M160 150 L240 230 L160 310 L180 330 L280 230 L180 130 Z" />
-                </svg>
-            </div>
-            <div class="onboarding-text-area">
-                <h1 class="onboarding-title">Pay Later for <span>the things you love</span></h1>
-            </div>
-        </div>
-
-        <!-- Slide 2 -->
-        <div class="onboarding-slide" id="slide2">
-            <div class="onboarding-visual">
-                <!-- Illustration 2: Management -->
-                <svg viewBox="0 0 400 400" class="svg-illustration floating">
-                    <!-- Balancing items -->
-                    <path d="M150 350 L250 350 L200 250 Z" fill="none" stroke="white" stroke-width="2" opacity="0.4" />
-                    <path d="M160 250 L240 250 L240 160 L160 160 Z" fill="none" stroke="white" stroke-width="2" opacity="0.6" />
-                    <circle cx="200" cy="110" r="40" fill="none" stroke="#C6FF00" stroke-width="3" stroke-dasharray="180 100" />
-                    <circle cx="200" cy="110" r="20" fill="rgba(198,255,0,0.2)" />
-                    <!-- Little L arrow on top -->
-                    <path fill="#C6FF00" d="M190 40 L210 60 L190 80 L195 85 L220 60 L195 35 Z" />
-                </svg>
-            </div>
-            <div class="onboarding-text-area">
-                <h1 class="onboarding-title">Easy <span>money management</span></h1>
-            </div>
-        </div>
-
-        <!-- Slide 3 -->
-        <div class="onboarding-slide" id="slide3">
-            <div class="onboarding-visual">
-                <!-- Illustration 3: Growth -->
-                <svg viewBox="0 0 400 400" class="svg-illustration">
-                    <!-- Archway -->
-                    <path d="M120 350 V180 Q120 100 200 100 Q280 100 280 180 V350" fill="rgba(255,255,255,0.05)" stroke="white" stroke-width="2" />
-                    <!-- Stairs inside -->
-                    <path d="M150 350 H250 V320 H220 V290 H190 V260 H160 V230 H140" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
-                    <!-- Symbols around -->
-                    <circle cx="320" cy="120" r="25" fill="none" stroke="white" stroke-width="1" />
-                    <path d="M310 120 H330 M320 110 V130" stroke="#C6FF00" stroke-width="2" />
-                    <!-- Giant Side L Arrow -->
-                    <path class="l-arrow-main" d="M50 180 L130 250 L50 320 L70 340 L170 250 L70 160 Z" />
-                </svg>
-            </div>
-            <div class="onboarding-text-area">
-                <h1 class="onboarding-title">Welcome <span>to your world of financial growth</span></h1>
-            </div>
-        </div>
-
-        <div class="onboarding-footer">
-            <div class="progress-dots">
-                <div class="dot active"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <button class="next-btn" onclick="nextSlide()">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                    <polyline points="12 5 19 12 12 19"></polyline>
-                </svg>
-            </button>
-        </div>
-    </div>
-
-    <!-- Liquid Background Elements -->
+    <!-- Premium Global Background -->
     <div class="blob-bg blob-1"></div>
     <div class="blob-bg blob-2"></div>
     <div class="blob-bg blob-3"></div>
 
-    <!-- AUTH SCREEN -->
-    <div id="authLayoutWrapper" style="display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; z-index: 10; position: relative;">
-        <div class="glass-panel" style="width: 100%; max-width: 400px; padding: 40px 30px; text-align: left; display: flex; flex-direction: column; gap: 24px;">
-            
-            <!-- Logo Area -->
-            <div style="text-align: center; margin-bottom: 10px;">
-                <h1 style="color: #C6FF00; font-size: 42px; font-weight: 800; letter-spacing: -1.5px; margin: 0; line-height: 1;">Finance<br>Manager</h1>
+    <!-- AUTH SCREEN (Initially Hidden) -->
+    <div id="authLayoutWrapper" style="display: none; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 20px; z-index: 10; position: relative;">
+        <div class="glass-panel" style="width: 100%; max-width: 440px; padding: 50px 40px; text-align: center; animation: slideUp 0.8s cubic-bezier(0.23, 1, 0.32, 1);">
+            <!-- Elegant Brand Header -->
+            <div style="margin-bottom: 40px;">
+                <h1 style="color: #fff; font-size: 48px; font-weight: 800; letter-spacing: -3px; line-height: 0.9;">Finance<span style="color: #C6FF00;">.</span></h1>
+                <p style="color: #94a3b8; font-size: 15px; margin-top: 15px; font-weight: 500; letter-spacing: 0.5px;">SECURE WEALTH MANAGEMENT</p>
             </div>
 
-            <h2 style="color: #e6edf3; font-size: 22px; font-weight: 500; margin: 0; line-height: 1.3; text-align: center;">login to supercharge<br>your finance</h2>
-
-            <!-- Setup Inputs -->
+            <!-- Login Context -->
             <div id="authFirstStep">
-                <!-- Email Input -->
-                <div style="margin-top: 10px;">
-                    <label style="display: block; color: #94a3b8; font-size: 13px; margin-bottom: 8px;">Email Address</label>
-                    <div style="display: flex; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden;">
-                        <input type="email" id="auth_email" placeholder="you@example.com" style="background: transparent; border: none; padding: 14px 16px; color: #fff; font-size: 16px; width: 100%; outline: none;" required>
-                    </div>
+                <div class="input-group">
+                    <label>Email Address</label>
+                    <input type="email" id="auth_email" placeholder="name@company.com" required>
                 </div>
 
-                <!-- Password Input -->
-                <div style="margin-top: 20px;">
-                    <label style="display: block; color: #94a3b8; font-size: 13px; margin-bottom: 8px;">Password</label>
-                    <div style="display: flex; background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); border-radius: 12px; overflow: hidden;">
-                        <input type="password" id="auth_password" placeholder="••••••••" style="background: transparent; border: none; padding: 14px 16px; color: #fff; font-size: 16px; width: 100%; outline: none;" required>
-                    </div>
+                <div class="input-group">
+                    <label>Secure Password</label>
+                    <input type="password" id="auth_password" placeholder="••••••••" required>
                 </div>
 
-                <!-- Main CTA -->
-                <button id="getStartedBtn" class="btn btn-primary" onclick="handleAuth()" style="margin: 30px 0 10px 0; display: flex; justify-content: center; align-items: center; gap: 8px; width: 100%;">
-                    Continue
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                <button id="getStartedBtn" class="btn btn-primary" onclick="handleAuth()" style="margin-top: 10px;">
+                    Enter Dashboard
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </button>
             </div>
             
-            <!-- OTP Input (Hidden initially) -->
+            <!-- OTP Verification -->
             <div id="otpSection" style="display: none;">
-                <label style="display: block; color: #94a3b8; font-size: 13px; margin-bottom: 8px;">Enter OTP sent to your email</label>
-                <input type="text" id="auth_otp" placeholder="0000" style="background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.1); padding: 14px 16px; color: #C6FF00; border-radius: 12px; font-size: 20px; font-weight: 700; width: 100%; outline: none; box-sizing: border-box; text-align: center; letter-spacing: 8px;" maxlength="4">
-                <p style="color: #94a3b8; font-size: 11px; margin-top: 12px; text-align: center;">If the OTP doesn't arrive in 30s, check your **terminal/console logs**!</p>
-                <button onclick="verifyOTP()" class="btn btn-primary" style="margin: 20px 0 0 0; width: 100%;">Verify & Sign Up</button>
+                <div style="margin-bottom: 30px;">
+                    <h2 style="font-size: 24px; font-weight: 800; color: #fff; margin-bottom: 10px;">Verify Identity</h2>
+                    <p style="color: #94a3b8; font-size: 14px;">Please enter the 4-digit code sent to your email.</p>
+                </div>
+                
+                <input type="text" id="auth_otp" placeholder="0000" maxlength="4" style="text-align: center; font-size: 32px; font-weight: 800; letter-spacing: 15px; padding: 25px; color: #C6FF00; background: rgba(0,0,0,0.4);">
+                
+                <p style="color: #f5576c; font-size: 12px; margin-top: 20px; font-weight: 600;">Check your console/logs if email is delayed.</p>
+                
+                <button onclick="verifyOTP()" class="btn btn-primary" style="margin-top: 30px;">Authorize Device</button>
             </div>
 
-            <div style="text-align: center; color: #94a3b8; font-size: 11px; margin-top: 10px;">
-                New users will need to verify their email via OTP
+            <div style="margin-top: 40px; padding-top: 25px; border-top: 1px solid rgba(255,255,255,0.06); font-size: 13px; color: #64748b;">
+                New accounts are automatically created via OTP verification.
             </div>
         </div>
     </div>
 
-    <!-- APP SCREEN -->
-    <div id="appLayoutWrapper">
+    <!-- APP SCREEN (Initially Hidden) -->
+    <div id="appLayoutWrapper" style="display: none;">
         <div class="container">
 
             <div class="header">
@@ -722,35 +637,6 @@
         </div>
     </div>
 
-    <script>
-        const BASE_API_URL = "https://finance-api-docker.onrender.com";
-        let currentOnboardingSlide = 1;
-
-        function nextSlide() {
-            if (currentOnboardingSlide < 3) {
-                document.getElementById(`slide${currentOnboardingSlide}`).classList.remove('active');
-                currentOnboardingSlide++;
-                document.getElementById(`slide${currentOnboardingSlide}`).classList.add('active');
-                
-                // Update dots
-                const dots = document.querySelectorAll('.dot');
-                dots.forEach((dot, idx) => {
-                    dot.classList.toggle('active', idx === currentOnboardingSlide - 1);
-                });
-            } else {
-                finishOnboarding();
-            }
-        }
-
-        function finishOnboarding() {
-            const wrapper = document.getElementById('onboardingWrapper');
-            wrapper.classList.add('hidden');
-            setTimeout(() => {
-                wrapper.style.display = 'none';
-                localStorage.setItem('hasSeenOnboarding', 'true');
-            }, 600);
-        }
-
         window.onload = function () {
             const today = new Date().toISOString().split("T")[0];
             const dateInput = document.getElementById("expense_date");
@@ -760,22 +646,26 @@
             }
 
             const token = localStorage.getItem("token");
-            const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
 
             if (token) {
                 document.getElementById('authLayoutWrapper').style.display = 'none';
-                document.getElementById('onboardingWrapper').style.display = 'none';
                 document.getElementById('appLayoutWrapper').style.display = 'block';
                 loadSummary();
                 loadHistory();
-            } else if (hasSeenOnboarding) {
-                document.getElementById('onboardingWrapper').style.display = 'none';
+                loadChart();
+            } else {
+                document.getElementById('appLayoutWrapper').style.display = 'none';
+                document.getElementById('authLayoutWrapper').style.display = 'flex';
             }
         };
 
         function showApp() {
             document.getElementById("authLayoutWrapper").style.display = "none";
             document.getElementById("appLayoutWrapper").style.display = "block";
+            window.scrollTo({top:0, behavior:'smooth'});
+            loadSummary();
+            loadHistory();
+            loadChart();
         }
 
         function getAuthHeaders() {
