@@ -6,481 +6,258 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Finance App</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Outfit', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: #0d1117;
-            color: #e6edf3;
-            min-height: 100vh;
-            overflow-x: hidden;
-            position: relative;
-        }
-
-        /* Animated Liquid Blobs Background */
-        .blob-bg {
+        /* Onboarding Styles */
+        #onboardingWrapper {
             position: fixed;
-            filter: blur(80px);
-            z-index: -1;
-            border-radius: 50%;
-            animation: floatBlob 20s infinite alternate ease-in-out;
-            opacity: 0.6;
-        }
-
-        .blob-1 {
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, #00f2fe, #4facfe);
-            top: -10%;
-            left: -10%;
-        }
-
-        .blob-2 {
-            width: 500px;
-            height: 500px;
-            background: radial-gradient(circle, #f093fb, #f5576c);
-            bottom: -20%;
-            right: -10%;
-            animation-delay: -5s;
-        }
-
-        .blob-3 {
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, #43e97b, #38f9d7);
-            bottom: 20%;
-            left: 20%;
-            animation-duration: 25s;
-        }
-
-        @keyframes floatBlob {
-            0% {
-                transform: translate(0, 0) scale(1);
-            }
-
-            33% {
-                transform: translate(30px, -50px) scale(1.1);
-            }
-
-            66% {
-                transform: translate(-20px, 20px) scale(0.9);
-            }
-
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-        }
-
-        /* Essential Glass Utility */
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-            border-left: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2), inset 0 0 15px rgba(255, 255, 255, 0.02);
-            position: relative;
-        }
-
-        /* Wrappers */
-        #authLayoutWrapper {
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background-color: #0d1117;
+            z-index: 2000;
             display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
+            flex-direction: column;
+            transition: transform 0.6s cubic-bezier(0.85, 0, 0.15, 1);
         }
 
-        #appLayoutWrapper {
+        .onboarding-slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             display: none;
-            padding-bottom: 90px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            padding: 20px;
-            width: 100%;
-        }
-
-        /* Auth Screen */
-        .auth-card {
-            padding: 40px 30px;
-            border-radius: 24px;
-            width: 100%;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .auth-card h1 {
-            font-size: 34px;
-            font-weight: 800;
-            margin-bottom: 8px;
-            letter-spacing: -1px;
-            background: linear-gradient(135deg, #fff, #a5b4fc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        .auth-card p {
-            color: #c7d2fe;
-            margin-bottom: 30px;
-            font-size: 15px;
-            line-height: 1.5;
-        }
-
-        /* Inputs */
-        .input-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        input,
-        select {
-            width: 100%;
-            padding: 16px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(0, 0, 0, 0.15);
-            color: #fff;
-            font-size: 16px;
-            outline: none;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        input:focus,
-        select:focus {
-            background: rgba(255, 255, 255, 0.05);
-            border-color: rgba(99, 102, 241, 0.5);
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15), inset 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        input::placeholder {
-            color: rgba(255, 255, 255, 0.4);
-        }
-
-        select {
-            cursor: pointer;
-        }
-
-        option {
-            background: #1a1f2c;
-            color: #fff;
-        }
-
-        /* Buttons */
-        .btn {
-            width: 100%;
-            padding: 16px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            font-weight: 600;
-            font-size: 16px;
-            letter-spacing: 0.5px;
-            cursor: pointer;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            position: relative;
+            flex-direction: column;
+            padding: 40px;
             overflow: hidden;
         }
 
-        .btn::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 50%;
-            height: 100%;
-            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.15), transparent);
-            transform: skewX(-25deg);
+        .onboarding-slide.active {
+            display: flex;
         }
 
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        .onboarding-visual {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
         }
 
-        .btn:hover::after {
-            left: 200%;
-            transition: 0.7s ease-in-out;
+        .onboarding-text-area {
+            height: 25%;
+            width: 100%;
+            max-width: 400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding-bottom: 60px;
         }
 
-        .btn:active {
+        .onboarding-title {
+            font-size: 34px;
+            font-weight: 500;
+            color: #C6FF00;
+            line-height: 1.1;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease 0.3s;
+        }
+
+        .onboarding-title span {
+            color: #fff;
+        }
+
+        .onboarding-slide.active .onboarding-title {
+            opacity: 1;
             transform: translateY(0);
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.8), rgba(67, 56, 202, 0.8));
-            border-color: rgba(99, 102, 241, 0.5);
-            color: #fff;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.9), rgba(67, 56, 202, 0.9));
-        }
-
-        .btn-outline {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.02));
-            color: #fff;
-            margin-top: 12px;
-        }
-
-        .btn-outline:hover {
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05));
-            border-color: rgba(255, 255, 255, 0.3);
-        }
-
-        /* App Header */
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            padding-top: 10px;
-        }
-
-        .header-title {
-            font-size: 26px;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            background: linear-gradient(135deg, #fff, #a5b4fc);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-
-        /* Summary Cards */
-        .summary-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .summary-card {
-            padding: 24px;
-            border-radius: 20px;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .summary-card::before {
-            content: '';
+        /* Slide Footer & Progress */
+        .onboarding-footer {
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 3px;
-            background: linear-gradient(90deg, transparent, rgba(99, 102, 241, 0.5), transparent);
-        }
-
-        .summary-card:hover {
-            background: rgba(255, 255, 255, 0.04);
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .summary-label {
-            font-size: 13px;
-            color: #94a3b8;
-            font-weight: 600;
-            margin-bottom: 10px;
-            display: block;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .summary-val {
-            font-size: 28px;
-            font-weight: 800;
-            background: linear-gradient(to right, #fff, #94a3b8);
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -0.5px;
-        }
-
-        /* Section Titles */
-        .section-title {
-            font-size: 20px;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: #c7d2fe;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-            padding-bottom: 10px;
-        }
-
-        /* Add Expense Form */
-        .add-expense-card {
-            padding: 24px;
-            border-radius: 20px;
-            margin-bottom: 40px;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 16px;
-        }
-
-        @media (max-width: 450px) {
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* History List View */
-        .history-list {
+            bottom: 40px;
+            left: 40px;
+            right: 40px;
             display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .history-item {
-            padding: 20px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
             justify-content: space-between;
-            transition: all 0.3s ease;
-        }
-
-        .history-item:hover {
-            background: rgba(255, 255, 255, 0.06);
-            transform: translateY(-2px);
-        }
-
-        .history-left {
-            display: flex;
             align-items: center;
-            gap: 16px;
+            z-index: 10;
         }
 
-        .cat-icon {
-            width: 52px;
-            height: 52px;
+        .progress-dots {
+            display: flex;
+            gap: 8px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: rgba(99, 102, 241, 0.15);
-            border: 1px solid rgba(99, 102, 241, 0.3);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 20px;
-            font-weight: 700;
-            color: #a5b4fc;
-            box-shadow: inset 0 2px 10px rgba(99, 102, 241, 0.2);
-        }
-
-        .history-details h4 {
-            font-size: 16px;
-            font-weight: 600;
-            margin-bottom: 6px;
-            color: #e6edf3;
-        }
-
-        .history-details p {
-            font-size: 13px;
-            color: #94a3b8;
-            font-weight: 500;
-        }
-
-        .history-amount {
-            font-size: 18px;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .empty-state {
-            text-align: center;
-            color: #94a3b8;
-            padding: 40px;
-            border-radius: 20px;
-            font-weight: 500;
-        }
-
-        /* Bottom Nav (Mobile) */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0px;
-            left: 0;
-            right: 0;
-            background: rgba(13, 17, 23, 0.95);
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            padding: 16px 20px 24px;
-            border-top: 1px solid rgba(255, 255, 255, 0.05);
-            z-index: 100;
-            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .nav-item {
-            color: #64748b;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
             transition: all 0.3s ease;
-            position: relative;
-            padding: 8px;
         }
 
-        .nav-item svg {
+        .dot.active {
+            background: #C6FF00;
+            border-color: #C6FF00;
+            width: 24px;
+            border-radius: 10px;
+        }
+
+        .next-btn {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+
+        .next-btn:active {
+            transform: scale(0.9);
+        }
+
+        .next-btn svg {
             width: 24px;
             height: 24px;
-            stroke-width: 2.5;
+            stroke: #0d1117;
         }
 
-        .nav-item.active {
-            color: #C6FF00;
-        }
-        
-        .nav-item.active::after {
-            content: '';
-            position: absolute;
-            bottom: -5px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 24px;
-            height: 3px;
-            background: #C6FF00;
-            border-radius: 4px;
-            box-shadow: 0 0 8px rgba(198, 255, 0, 0.6);
+        /* Specific Visual Animations */
+        .floating {
+            animation: float 4s ease-in-out infinite;
         }
 
-        @media (min-width: 768px) {
-            .bottom-nav {
-                max-width: 600px;
-                margin: 0 auto;
-                left: 50%;
-                transform: translateX(-50%);
-                border-radius: 24px 24px 0 0;
-            }
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-15px); }
+            100% { transform: translateY(0px); }
+        }
 
-            #appLayoutWrapper {
-                padding-bottom: 40px;
-            }
+        .rotate-l {
+            animation: rotateL 10s linear infinite;
+        }
+
+        @keyframes rotateL {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* SVG Styles */
+        .svg-illustration {
+            width: 80%;
+            max-width: 300px;
+            height: auto;
+        }
+
+        .l-arrow-main {
+            fill: #C6FF00;
+            filter: drop-shadow(0 0 10px rgba(198,255,0,0.4));
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        #onboardingWrapper.hidden {
+            transform: translateY(-100%);
+            pointer-events: none;
         }
     </style>
 </head>
 
 <body>
+
+    <!-- Animated Onboarding -->
+    <div id="onboardingWrapper">
+        <!-- Slide 1 -->
+        <div class="onboarding-slide active" id="slide1">
+            <div class="onboarding-visual">
+                <!-- Illustration 1: Pay Later -->
+                <svg viewBox="0 0 400 400" class="svg-illustration floating">
+                    <circle cx="200" cy="200" r="140" fill="rgba(198,255,0,0.05)" />
+                    <circle cx="100" cy="120" r="5" fill="#fff" opacity="0.4" />
+                    <circle cx="280" cy="150" r="10" fill="#fff" opacity="0.2" />
+                    <circle cx="300" cy="300" r="4" fill="#fff" opacity="0.5" />
+                    <!-- Apple Watch-style ring -->
+                    <circle cx="310" cy="100" r="50" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="2" />
+                    <rect x="290" y="80" width="40" height="40" rx="8" fill="rgba(198,255,0,0.1)" stroke="#C6FF00" stroke-width="1.5" />
+                    <!-- Jacket outline -->
+                    <path d="M100 350 Q100 250 150 220 L250 220 Q300 250 300 350" fill="none" stroke="white" stroke-width="1.5" opacity="0.6" />
+                    <path d="M150 220 L130 180 Q100 200 100 250" fill="none" stroke="white" stroke-width="1.5" opacity="0.3" />
+                    <!-- Giant L Arrow -->
+                    <path class="l-arrow-main" d="M160 150 L240 230 L160 310 L180 330 L280 230 L180 130 Z" />
+                </svg>
+            </div>
+            <div class="onboarding-text-area">
+                <h1 class="onboarding-title">Pay Later for <span>the things you love</span></h1>
+            </div>
+        </div>
+
+        <!-- Slide 2 -->
+        <div class="onboarding-slide" id="slide2">
+            <div class="onboarding-visual">
+                <!-- Illustration 2: Management -->
+                <svg viewBox="0 0 400 400" class="svg-illustration floating">
+                    <!-- Balancing items -->
+                    <path d="M150 350 L250 350 L200 250 Z" fill="none" stroke="white" stroke-width="2" opacity="0.4" />
+                    <path d="M160 250 L240 250 L240 160 L160 160 Z" fill="none" stroke="white" stroke-width="2" opacity="0.6" />
+                    <circle cx="200" cy="110" r="40" fill="none" stroke="#C6FF00" stroke-width="3" stroke-dasharray="180 100" />
+                    <circle cx="200" cy="110" r="20" fill="rgba(198,255,0,0.2)" />
+                    <!-- Little L arrow on top -->
+                    <path fill="#C6FF00" d="M190 40 L210 60 L190 80 L195 85 L220 60 L195 35 Z" />
+                </svg>
+            </div>
+            <div class="onboarding-text-area">
+                <h1 class="onboarding-title">Easy <span>money management</span></h1>
+            </div>
+        </div>
+
+        <!-- Slide 3 -->
+        <div class="onboarding-slide" id="slide3">
+            <div class="onboarding-visual">
+                <!-- Illustration 3: Growth -->
+                <svg viewBox="0 0 400 400" class="svg-illustration">
+                    <!-- Archway -->
+                    <path d="M120 350 V180 Q120 100 200 100 Q280 100 280 180 V350" fill="rgba(255,255,255,0.05)" stroke="white" stroke-width="2" />
+                    <!-- Stairs inside -->
+                    <path d="M150 350 H250 V320 H220 V290 H190 V260 H160 V230 H140" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="1.5" />
+                    <!-- Symbols around -->
+                    <circle cx="320" cy="120" r="25" fill="none" stroke="white" stroke-width="1" />
+                    <path d="M310 120 H330 M320 110 V130" stroke="#C6FF00" stroke-width="2" />
+                    <!-- Giant Side L Arrow -->
+                    <path class="l-arrow-main" d="M50 180 L130 250 L50 320 L70 340 L170 250 L70 160 Z" />
+                </svg>
+            </div>
+            <div class="onboarding-text-area">
+                <h1 class="onboarding-title">Welcome <span>to your world of financial growth</span></h1>
+            </div>
+        </div>
+
+        <div class="onboarding-footer">
+            <div class="progress-dots">
+                <div class="dot active"></div>
+                <div class="dot"></div>
+                <div class="dot"></div>
+            </div>
+            <button class="next-btn" onclick="nextSlide()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </div>
+    </div>
 
     <!-- Liquid Background Elements -->
     <div class="blob-bg blob-1"></div>
@@ -812,20 +589,52 @@
     </div>
 
     <script>
-        let expenseChartInstance = null;
+        let currentOnboardingSlide = 1;
+
+        function nextSlide() {
+            if (currentOnboardingSlide < 3) {
+                document.getElementById(`slide${currentOnboardingSlide}`).classList.remove('active');
+                currentOnboardingSlide++;
+                document.getElementById(`slide${currentOnboardingSlide}`).classList.add('active');
+                
+                // Update dots
+                const dots = document.querySelectorAll('.dot');
+                dots.forEach((dot, idx) => {
+                    dot.classList.toggle('active', idx === currentOnboardingSlide - 1);
+                });
+            } else {
+                finishOnboarding();
+            }
+        }
+
+        function finishOnboarding() {
+            const wrapper = document.getElementById('onboardingWrapper');
+            wrapper.classList.add('hidden');
+            setTimeout(() => {
+                wrapper.style.display = 'none';
+                localStorage.setItem('hasSeenOnboarding', 'true');
+            }, 600);
+        }
 
         window.onload = function () {
             const today = new Date().toISOString().split("T")[0];
             const dateInput = document.getElementById("expense_date");
-            dateInput.value = today;
-            dateInput.max = today; // Restrict future dates
+            if(dateInput) {
+                dateInput.value = today;
+                dateInput.max = today; 
+            }
 
             const token = localStorage.getItem("token");
+            const hasSeenOnboarding = localStorage.getItem('hasSeenOnboarding');
+
             if (token) {
-                showApp();
+                document.getElementById('authLayoutWrapper').style.display = 'none';
+                document.getElementById('onboardingWrapper').style.display = 'none';
+                document.getElementById('appLayoutWrapper').style.display = 'block';
                 loadSummary();
                 loadHistory();
-                loadChart();
+            } else if (hasSeenOnboarding) {
+                document.getElementById('onboardingWrapper').style.display = 'none';
             }
         };
 
