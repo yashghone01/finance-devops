@@ -637,6 +637,10 @@
         </div>
     </div>
 
+    <script>
+        const BASE_API_URL = "https://finance-api-docker.onrender.com";
+        let expenseChartInstance = null;
+
         window.onload = function () {
             const today = new Date().toISOString().split("T")[0];
             const dateInput = document.getElementById("expense_date");
