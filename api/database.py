@@ -10,6 +10,11 @@ DATABASE_URL = os.getenv(
     "postgresql://postgres:postgres@db:5432/finance_db"
 )
 
+# SQLAlchemy 1.4+ requires "postgresql://" instead of "postgres://"
+if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
+
 # Standard engine creation (SQAlchemy handles connection pooling)
 engine = create_engine(
     DATABASE_URL,

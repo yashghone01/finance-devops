@@ -18,7 +18,17 @@ from api.auth import (
     get_current_user
 )
 
+from fastapi.responses import JSONResponse
+
 app = FastAPI()
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request, exc):
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Internal Server Error: {str(exc)}"}
+    )
+
 
 app.add_middleware(
     CORSMiddleware,
