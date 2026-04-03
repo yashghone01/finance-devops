@@ -10,19 +10,12 @@ DATABASE_URL = os.getenv(
     "postgresql://postgres:postgres@db:5432/finance_db"
 )
 
-# Retry connection until DB is ready (Increased for Render cold starts)
-for i in range(30):
-    try:
-        engine = create_engine(DATABASE_URL)
-        connection = engine.connect()
-        connection.close()
-        print("Database connected successfully.")
-        break
-    except Exception as e:
-        print("Database not ready, retrying...")
-        time.sleep(3)
-else:
-    raise Exception("Could not connect to database.")
+# Standard engine creation (SQAlchemy handles connection pooling)
+engine = create_engine(
+    DATABASE_URL,
+    pool_pre_ping=True,  # Automatically check if connection is alive
+    connect_args={"connect_timeout": 10} # Don't hang for more than 10s
+)
 
 SessionLocal = sessionmaker(
     autocommit=False,
