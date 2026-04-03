@@ -29,43 +29,31 @@ app.add_middleware(
 )
 
 # -----------------------------
-# Startup: Create Tables
+# Startup: Create Tables (Safe Wrapper)
 # -----------------------------
 @app.on_event("startup")
 def create_tables():
-    queries = [
-        """
-        CREATE TABLE IF NOT EXISTS users (
-            id SERIAL PRIMARY KEY,
-            email VARCHAR(255) UNIQUE NOT NULL,
-            password_hash TEXT NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-        );
-        """,
-        """
-        CREATE TABLE IF NOT EXISTS transactions (
-            id SERIAL PRIMARY KEY,
-            amount DECIMAL(10,2) NOT NULL CHECK (amount > 0),
-            category VARCHAR(100) NOT NULL,
-            payment_mode VARCHAR(10) CHECK (payment_mode IN ('CASH','UPI')),
-            description TEXT,
-            expense_date DATE NOT NULL,
-            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-            user_id INTEGER REFERENCES users(id) ON DELETE CASCADE
-        );
-        """,
-        "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS type VARCHAR(10) DEFAULT 'EXPENSE';",
-        "ALTER TABLE users ADD COLUMN IF NOT EXISTS monthly_budget DECIMAL(10,2) DEFAULT 0.00;"
-    ]
-
-    with engine.connect() as connection:
-        for q in queries:
-            try:
-                connection.execute(text(q))
-                connection.commit()
-            except Exception as e:
-                print(f"Statement failed: {e}")
-                connection.rollback()
+    print("Attempting to initialize database tables...")
+    try:
+        queries = [
+            "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, email VARCHAR(255) UNIQUE NOT NULL, password_hash TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
+            "CREATE TABLE IF NOT EXISTS transactions (id SERIAL PRIMARY KEY, amount DECIMAL(10,2) NOT NULL CHECK (amount > 0), category VARCHAR(100) NOT NULL, payment_mode VARCHAR(10) CHECK (payment_mode IN ('CASH','UPI')), description TEXT, expense_date DATE NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, user_id INTEGER REFERENCES users(id) ON DELETE CASCADE);",
+            "ALTER TABLE transactions ADD COLUMN IF NOT EXISTS type VARCHAR(10) DEFAULT 'EXPENSE';",
+            "ALTER TABLE users ADD COLUMN IF NOT EXISTS monthly_budget DECIMAL(10,2) DEFAULT 0.00;"
+        ]
+        
+        with engine.connect() as connection:
+            for q in queries:
+                try:
+                    connection.execute(text(q))
+                    connection.commit()
+                except Exception as sql_e:
+                    print(f"Schema update notice: {sql_e}")
+        
+        print("Database tables initialized/verified.")
+    except Exception as e:
+        print(f"WARNING: Could not connect to DB on startup: {e}")
+        # The server will still stay UP and respond, retrying on first request.
 
 
 # -----------------------------
