@@ -18,9 +18,7 @@ if DATABASE_URL and DATABASE_URL.startswith("postgres://"):
 
 # Fix Render's flaky internal DNS by forcing the external Singapore domain
 if "dpg-" in DATABASE_URL and ".render.com" not in DATABASE_URL:
-    DATABASE_URL = re.sub(r'(dpg-[a-z0-9\-]+-a)(?=[:/])', r'\1.singapore-postgres.render.com', DATABASE_URL)
-
-
+    DATABASE_URL = DATABASE_URL.replace("dpg-d6fc3nh4tr6s73br2k30-a", "dpg-d6fc3nh4tr6s73br2k30-a.singapore-postgres.render.com")
 
 # Standard engine creation (SQAlchemy handles connection pooling)
 engine = create_engine(
