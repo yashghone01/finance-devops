@@ -33,11 +33,14 @@ async def global_exception_handler(request, exc):
 app.add_middleware(
     CORSMiddleware,
     allow_origins=[
+        "https://finance-devops.vercel.app/",
         "https://finance-devops.vercel.app",
         "http://localhost:3000",
-        "http://127.0.0.1:3000"
+        "http://localhost:5173",
+        "http://127.0.0.1:3000",
+        "*"
     ],
-    allow_credentials=True,
+    allow_credentials=False, # Set to False when using wildcard "*" to avoid browser errors
     allow_methods=["*"],
     allow_headers=["*"],
 )
