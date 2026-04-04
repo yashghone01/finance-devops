@@ -333,7 +333,10 @@
                 </div>
 
                 <div class="input-group">
-                    <label>Secure Password</label>
+                    <label style="display: flex; justify-content: space-between;">
+                        <span>Secure Password</span>
+                        <a href="javascript:void(0)" onclick="handleForgotPassword()" style="color: #94a3b8; font-size: 13px; font-weight: 500; text-transform: none; letter-spacing: 0; text-decoration: none; transition: color 0.3s; cursor: pointer;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#94a3b8'">Forgot Password?</a>
+                    </label>
                     <input type="password" id="auth_password" placeholder="••••••••" required>
                 </div>
 
@@ -705,16 +708,40 @@
                 if (response.ok && data.access_token) {
                     localStorage.setItem("token", data.access_token);
                     showApp();
+                } else if (response.status === 404) {
+                    // Registration flow for new users
+                    requestOTP(email, 'register');
+                } else if (response.status === 401) {
+                    // Incorrect password for existing users
+                    alert("Incorrect password. If you forgot your password, click 'Forgot Password?'.");
                 } else {
-                    // This enables "Unknown Emails" to get an OTP and sign up automatically
-                    requestOTP(email);
+                    alert(data.detail || "Authentication Failed.");
                 }
             } catch (e) {
                 alert("Error connecting to server.");
             }
         }
 
-        async function requestOTP(email) {
+        async function handleForgotPassword() {
+            const email = document.getElementById("auth_email").value;
+            if (!email || !email.includes("@")) {
+                return alert("Please enter your registered email address to reset your password.");
+            }
+            
+            // Ask for new password
+            const newPassword = prompt("Enter your NEW password (minimum 4 characters):");
+            if (!newPassword || newPassword.length < 4) {
+                return alert("Password reset cancelled. Invalid password.");
+            }
+            
+            document.getElementById("auth_password").value = newPassword;
+            requestOTP(email, 'reset');
+        }
+
+        let currentAuthMode = 'login';
+        
+        async function requestOTP(email, mode) {
+            currentAuthMode = mode;
             document.getElementById("getStartedBtn").innerText = "Checking...";
 
             try {

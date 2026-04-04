@@ -191,8 +191,11 @@ def verify_otp_endpoint(req: OTPVerify):
             conn.commit()
             user = conn.execute(text("SELECT id, password_hash FROM users WHERE email = :email"), {"email": req.email}).fetchone()
         else:
-            # User already exists, if they got here via OTP (e.g. forgot password flow), we can log them in
-            pass
+            # User already exists, if they got here via OTP (e.g. forgot password flow), update password
+            if req.password:
+                p_hash = hash_password(req.password)
+                conn.execute(text("UPDATE users SET password_hash = :hash WHERE email = :email"), {"email": req.email, "hash": p_hash})
+                conn.commit()
     
     return {"access_token": create_access_token(user.id), "token_type": "bearer"}
 
