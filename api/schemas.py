@@ -19,3 +19,7 @@ class OTPVerify(BaseModel):
     email: str
     otp: str
     password: str | None = None
+
+class ResetPasswordRequest(BaseModel):
+    token: str
+    new_password: str

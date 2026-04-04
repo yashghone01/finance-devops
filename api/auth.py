@@ -27,6 +27,20 @@ def create_access_token(user_id: int):
     to_encode = {"sub": str(user_id), "exp": expire}
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
+def create_reset_token(email: str):
+    expire = datetime.utcnow() + timedelta(minutes=15) # 15 minutes expiry
+    to_encode = {"sub": email, "type": "reset", "exp": expire}
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+
+def verify_reset_token(token: str):
+    try:
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        if payload.get("type") != "reset":
+            return None
+        return payload.get("sub")
+    except JWTError:
+        return None
+
 
 def get_current_user(token: str = Depends(oauth2_scheme)):
     try:

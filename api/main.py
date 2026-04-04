@@ -10,12 +10,14 @@ from fastapi.responses import FileResponse
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy import text
 from api.database import engine
-from api.schemas import ExpenseCreate, BudgetUpdate, OTPRequest, OTPVerify
+from api.schemas import ExpenseCreate, BudgetUpdate, OTPRequest, OTPVerify, ResetPasswordRequest
 from api.auth import (
     hash_password,
     verify_password,
     create_access_token,
-    get_current_user
+    get_current_user,
+    create_reset_token,
+    verify_reset_token
 )
 
 from fastapi.responses import JSONResponse
@@ -198,6 +200,51 @@ def verify_otp_endpoint(req: OTPVerify):
                 conn.commit()
     
     return {"access_token": create_access_token(user.id), "token_type": "bearer"}
+
+@app.post("/auth/send-reset-link")
+def send_reset_link(req: OTPRequest):
+    with engine.connect() as conn:
+        user = conn.execute(text("SELECT id FROM users WHERE email = :email"), {"email": req.email}).fetchone()
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+            
+    token = create_reset_token(req.email)
+    reset_url = f"https://finance-devops.vercel.app/?reset_token={token}"
+    
+    data = json.dumps({
+        "sender": {"name": "Finance Manager", "email": SENDER_EMAIL},
+        "to": [{"email": req.email}],
+        "subject": "Secure Password Reset Link",
+        "htmlContent": f"<html><body><p>Hello,</p><p>Click the link below to securely reset your password:</p><p><a href='{reset_url}' style='color:#C6FF00; background:#0d1117; padding: 10px 20px; text-decoration:none; border-radius:10px; font-weight:bold; display:inline-block; margin-top:10px;'>Reset My Password</a></p><p>This link will expire in 15 minutes.</p><br><p>If you did not request this, please ignore this email.</p></body></html>"
+    }).encode("utf-8")
+
+    try:
+        req_obj = urllib.request.Request("https://api.brevo.com/v3/smtp/email", data=data)
+        req_obj.add_header("api-key", BREVO_API_KEY)
+        req_obj.add_header("Content-Type", "application/json")
+        req_obj.add_header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64)")
+        
+        with urllib.request.urlopen(req_obj) as response:
+            return {"message": "Reset link sent"}
+    except Exception as e:
+        print(f"Failed to send email via Brevo: {e}")
+        return {"message": "Email fail", "fallback_link": reset_url}
+
+@app.post("/auth/reset-password")
+def reset_password(req: ResetPasswordRequest):
+    email = verify_reset_token(req.token)
+    if not email:
+        raise HTTPException(status_code=400, detail="Invalid or expired reset token")
+        
+    p_hash = hash_password(req.new_password)
+    with engine.connect() as conn:
+        user = conn.execute(text("SELECT id FROM users WHERE email = :email"), {"email": email}).fetchone()
+        if not user:
+             raise HTTPException(status_code=404, detail="User not found")
+        conn.execute(text("UPDATE users SET password_hash = :hash WHERE email = :email"), {"email": email, "hash": p_hash})
+        conn.commit()
+    
+    return {"message": "Password updated successfully"}
 
 # =============================
 # EXPENSE ROUTES (PROTECTED)
