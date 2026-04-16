@@ -34,15 +34,8 @@ async def global_exception_handler(request, exc):
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "https://finance-devops.vercel.app/",
-        "https://finance-devops.vercel.app",
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "*"
-    ],
-    allow_credentials=False, # Set to False when using wildcard "*" to avoid browser errors
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
@@ -52,7 +45,9 @@ app.add_middleware(
 # -----------------------------
 @app.on_event("startup")
 def create_tables():
-    print("Attempting to initialize database tables...")
+    from api.database import DATABASE_URL
+    masked_url = DATABASE_URL.split("@")[-1] if "@" in DATABASE_URL else "local/unknown"
+    print(f"Attempting to initialize database tables on: ...@{masked_url}")
     try:
         queries = [
             "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, email VARCHAR(255) UNIQUE NOT NULL, password_hash TEXT NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP);",
